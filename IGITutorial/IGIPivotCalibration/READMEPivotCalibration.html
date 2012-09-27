@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Pivot Calibration</title>
+
+</head>
+<body>
+<table border="1">
+<tbody>
+<tr>
+<td> This software was described in: "Image-Guided
+Navigation: A Cost Effective Practical Introduction using the
+Image-Guided Surgery Toolkit (IGSTK)", Ö. Güler, Z. Yaniv, <i>IEEE
+EMBC</i>, 2012. </td>
+</tr>
+</tbody>
+</table>
+<a name="calibrationProcess"></a>
+<h3>Pivot Calibration</h3>
+<p>
+To enable tracking of the tip of a pointer tool we need to calibrate
+it. The calibration process is straightforward and only requires
+rotating the tool around a fixed, pivot, point. Any rigid pointer like
+object can be used as a tool. We have found that a short hexagonal
+pencil with a blunt tip is the simplest readily available pointer.
+</p>
+<p>
+To calibrate the pointer tool you will need to follow the two step
+process described below:
+</p>
+<ol type="I">
+<li> <b>Preparation</b>:
+<ol type="a">
+<li>
+<p> If you haven't done so, perform camera calibration
+using the provided application. </p>
+</li>
+<li>
+<p> Print the tracked marker patterns
+(IGITutorial/Data/TrackedMarkers/markers.pdf), and separate the markers
+along the dashed lines. <u>Make sure that the internal, black,
+marker square size is 50mm</u>.</p>
+</li>
+<li>Glue or tape one of the markers to the pointer tool (this
+is easy with a hexagonal pencil, not as much with a cylindrical one).</li>
+</ol>
+</li>
+<li> <b>Pivot Calibration</b>:
+<ol type="a">
+<li>
+<p> Select the pointer tool's marker from the dropdown
+menu (match the marker image or id number). </p>
+</li>
+<li>
+<p> Select the number of transformations to acquire. Note
+that the more transformations the more accurate the calibration but you
+will have to pivot the pointer for a longer time (acquiring the default
+number of transformations, 300, takes about 15s). </p>
+</li>
+<li>
+<p> Press the "Initialize Tracker" button (shortcut key:
+[i]). LED light will turn green, indicating success. </p>
+</li>
+<li>
+<p> Position the pointer tool in the location where you
+want to perform the calibration and make sure that it is visible by the
+camera. Press the "Check Marker Position" button (shortcut key: [c]). A
+popup showing the camera view will be displayed. The window is
+automatically closed after a few seconds. If the tracked marker was
+visible in the central part of the previous image you can continue to
+the next step, otherwise move the pointer to a new location and repeat
+the process. </p>
+</li>
+<li>
+<p> Press the "Calibrate" button (shortcut key: [space]).
+You have 5s before data acquisition begins. Start pivoting the pointer
+around the fixed point until data acquisition is completed. If the
+calibration is successful the information is saved in a file named
+"ToolTip.xml" in a subdirectory where the tutorial was installed
+(IGITutorial/Configuration).</p>
+</li>
+</ol>
+</li>
+</ol>
+<a name="programShortcuts"></a>
+<h3>Program Shortcuts</h3>
+<table>
+<tbody>
+<tr>
+<td align="center">[i]</td>
+<td>Initialize tracker</td>
+</tr>
+<tr>
+<td align="center">[c]</td>
+<td>Show snapshot from camera</td>
+</tr>
+<tr>
+<td align="center">[space]</td>
+<td>Calibrate pointer</td>
+</tr>
+<tr>
+<td align="center">[h]</td>
+<td>Show help dialog</td>
+</tr>
+<tr>
+<td align="center">[q]</td>
+<td>Quit Application</td>
+</tr>
+</tbody>
+</table>
+</body></html>
