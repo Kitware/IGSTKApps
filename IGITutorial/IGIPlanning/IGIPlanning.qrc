@@ -1,0 +1,22 @@
+<RCC>
+  <qresource prefix="Images" >
+    <file>Images/ark_new.png</file>
+    <file>Images/icon.png</file>
+    <file>Images/fileopen.png</file>
+    <file>Images/2leftarrow.png</file>
+    <file>Images/2rightarrow.png</file>
+    <file>Images/icon.ico</file>
+    <file>Images/help.png</file>
+    <file>Images/filesaveas.png</file>
+    <file>Images/SZI_V_cmyk.png</file>
+    <file>Images/filesave.png</file>
+    <file>Images/ButtonQuit.png</file>
+    <file>Images/102.png</file>
+    <file>Images/201.png</file>
+    <file>Images/202.png</file>
+    <file>Images/403.png</file>
+    <file>Images/502.png</file>
+    <file>Images/edit_add.png</file>
+    <file>Images/edit_remove.png</file>
+  </qresource>
+</RCC>

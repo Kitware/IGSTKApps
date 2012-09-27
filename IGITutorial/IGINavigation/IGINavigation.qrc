@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="Images">
+    <file>Images/ButtonQuit.png</file>
+    <file>Images/help.png</file>
+    <file>Images/greenLED.png</file>
+    <file>Images/redLED.png</file>
+    <file>Images/icon.png</file>
+    <file>Images/SZI_V_cmyk.png</file>
+  </qresource>
+</RCC>
