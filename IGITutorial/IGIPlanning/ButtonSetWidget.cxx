@@ -1,6 +1,7 @@
 #include "ButtonSetWidget.h"
 
 ButtonSetWidget::ButtonSetWidget(){}
+
 ButtonSetWidget::~ButtonSetWidget(){}
 
 ButtonSetWidget::ButtonSetWidget(QStringList texts, QWidget *parent)
@@ -56,13 +57,6 @@ void ButtonSetWidget::RemoveButton(QString name)
   signalMapper->removeMappings(button);
   delete button;
   buttonContainer.remove(name);
-    
-  //if(buttonContainer.size()!=0)
-  //{
-  //  QMap<QString, QPushButton*>::Iterator iButton;
-  //  iButton = buttonContainer.begin();
-  //  iButton.value()->setChecked(true);
-  //}
 
   RearrangeGridLayout();
 }

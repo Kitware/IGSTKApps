@@ -11,19 +11,10 @@
 
 class ErrorManager
 {
-public:  
-  igstkLoggerMacro();
-
+public:
   typedef unsigned int SUCCESS_VALUE;
-
   ErrorManager();
   void handleMessage(std::string, bool);
-
-private:
-
-  /** Log file */
-  std::ofstream       m_LogFile;  
-  std::string      m_LogFileName;
 };
 
 #endif

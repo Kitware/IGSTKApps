@@ -17,20 +17,26 @@ class MainWidget : public QWidget
 public:
   MainWidget( QWidget * parent = NULL );
   ~MainWidget();
-  void getImagesFromCurrentDirectory();
+
 public slots:
-  void startCamera();
-  void displayImage( const QImage& image );
-  void calibrateCamera();
-  void validateCalibration();
-  void quitApp();
-  void showHelp();
+  void StartCamera();
+  void DisplayImage( const QImage& image );
+  void CalibrateCamera();
+  void ValidateCalibration();
+  void QuitApp();
+  void ShowHelp();
+  void CaptureToFile();
+
 protected slots:
-  void captureError( const QString& text );
+  void CaptureError( const QString& text );
+
 private:
   Ui_MainWidget* m_UI;
   ImageCapture* m_Capture;
-  vector<std::string> m_fileNames;
+  vector<std::string> m_FileNames;
+  std::string m_ImageDirectory;
+  QString m_CurrentPath;
+  QString m_ConfigDir;
   void keyPressEvent(QKeyEvent * e );
 };
 

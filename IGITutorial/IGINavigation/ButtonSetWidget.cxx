@@ -1,6 +1,7 @@
 #include "ButtonSetWidget.h"
 
 ButtonSetWidget::ButtonSetWidget(){}
+
 ButtonSetWidget::~ButtonSetWidget(){}
 
 ButtonSetWidget::ButtonSetWidget(QStringList texts, QWidget *parent)

@@ -22,14 +22,23 @@ IGIPlanningGUI::IGIPlanningGUI()
   m_GUI.progressBar->setValue( 0);
   m_GUI.WizardTab->setCurrentIndex(0);
   m_CurrentPointSetSaved = true;
-  m_Window = 4000;
-  m_Level = 1000;
-
+  m_Window = 1152;
+  m_Level = -448;
+  
+  // get current application path
+  QString path = QApplication::applicationDirPath();
+  QDir currentDir = QDir(path);
+  m_CurrentPath = currentDir.absolutePath();
+  currentDir.cdUp();
+  m_TutorialDir = currentDir.absolutePath();
+  m_ConfigDir = currentDir.absolutePath() + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
+  m_DatatDir = currentDir.absolutePath() + "/Data";
+  
   m_WindowLevelSlider = new ctkRangeSlider(this);
   m_WindowLevelSlider->setOrientation(Qt::Horizontal);
   m_WindowLevelSlider->setRange(-1024,3071);
   m_WindowLevelSlider->setTracking(true);
-  m_WindowLevelSlider->setValues(m_Level - m_Window / 2, m_Level + m_Window / 2);
+  m_WindowLevelSlider->setValues(-1024, 128);
   m_GUI.WindowLevelLayout->addWidget(m_WindowLevelSlider);
   m_WindowLevelSlider->setEnabled(false);
 
@@ -196,6 +205,10 @@ void IGIPlanningGUI::SetupView()
   m_ViewCoronal = View2DType::New();
   m_View3D = View3DType::New();
 
+  m_ViewAxial->RequestSetOrientation(View2DType::Axial);
+  m_ViewSagittal->RequestSetOrientation(View2DType::Sagittal);
+  m_ViewCoronal->RequestSetOrientation(View2DType::Coronal);
+
   // Set IGSTK view for Qt display
   m_GUI.Display3D->RequestSetView (m_View3D);
   m_GUI.DisplayAxial->RequestSetView (m_ViewAxial);
@@ -221,10 +234,11 @@ void IGIPlanningGUI::LoadImageAction()
 {
   handleMessage("IGIPlanningGUI::LoadImageProcessing called...\n", 0);
 
+  QString path = m_DatatDir + "/CT";
   QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly;
   QString directory = QFileDialog::getExistingDirectory(this,
                                                         "Select DICOM directory.",
-                                                        "../Data/CT",
+                                                        path,
                                                         options);
   if(directory.isNull())
     return;
@@ -245,7 +259,6 @@ void IGIPlanningGUI::LoadImageAction()
 
   /** Setup image reader  */
   CTImageReaderType::Pointer CTImageReader        = CTImageReaderType::New();
-  CTImageReader->SetLogger( this->GetLogger() );
 
   /** Build itk progress command to assess image load progress */
   itk::SmartPointer<ProgressCommandType>            progressCommand;
@@ -442,19 +455,16 @@ void IGIPlanningGUI::ConnectImageRepresentation()
   
   // create reslice plane representation for axial view
   m_AxialPlaneRepresentation = CTImageRepresentationType::New();
-  m_AxialPlaneRepresentation->SetFrameColor(1,0,0);
   m_AxialPlaneRepresentation->RequestSetImageSpatialObject( m_CTImageSpatialObject );
   m_AxialPlaneRepresentation->RequestSetReslicePlaneSpatialObject( m_AxialPlaneSpatialObject );
 
   // create reslice plane representation for sagittal view
   m_SagittalPlaneRepresentation = CTImageRepresentationType::New();
-  m_SagittalPlaneRepresentation->SetFrameColor(0,1,0);
   m_SagittalPlaneRepresentation->RequestSetImageSpatialObject( m_CTImageSpatialObject );
   m_SagittalPlaneRepresentation->RequestSetReslicePlaneSpatialObject( m_SagittalPlaneSpatialObject );
 
   // create reslice plane representation for coronal view
   m_CoronalPlaneRepresentation = CTImageRepresentationType::New();
-  m_CoronalPlaneRepresentation->SetFrameColor(0,0,1);
   m_CoronalPlaneRepresentation->RequestSetImageSpatialObject( m_CTImageSpatialObject );
   m_CoronalPlaneRepresentation->RequestSetReslicePlaneSpatialObject( m_CoronalPlaneSpatialObject );
 
@@ -655,9 +665,10 @@ void IGIPlanningGUI::LoadToolSpatialObjectAction()
   handleMessage(
      "IGIPlanningGUI::LoadToolSpatialObjectAction called...\n", 0 );
 
+  QString path = m_DatatDir + "/MeshModels";
   QString fName = QFileDialog::getOpenFileName(this,
     "Select 3D Model for Pointer Tool.",
-    "../Data/MeshModels",
+    path,
     "3D Mesh Model File (*.msh)");
 
   if(fName.isNull())
@@ -708,7 +719,7 @@ void IGIPlanningGUI::SelectCameraCalibrationFile()
 
   QString fName = QFileDialog::getOpenFileName(this,
       "Select Camera Calibration File.",
-      "../Configuration",
+      m_ConfigDir,
       "Camera Calibration File (*.yml)");
 
   if(fName.isNull())
@@ -729,7 +740,7 @@ void IGIPlanningGUI::SelectPointerToolCalibrationFile()
 
   QString fName = QFileDialog::getOpenFileName(this,
       "Select Pointer Tool Calibration File.",
-      "../Configuration",
+      m_ConfigDir,
       "Pointer Tool Calibration File (*.xml)");
 
   if(fName.isNull())
@@ -770,20 +781,18 @@ void IGIPlanningGUI::SaveConfiguration()
   if(m_FiducialSetFilename.isEmpty())
   {
     QMessageBox::information(this, "IGI Planning", "Fiducial point set file not defined.");
-    m_GUI.WizardTab->setCurrentIndex(1);
     return;
   }
 
   if(!m_CurrentPointSetSaved)
   {
-      QMessageBox::StandardButton value = 
-    QMessageBox::information(this,
-    "IGIPlanning:", "Unsaved point set exists. Proceed without saving current point set?",
-    QMessageBox::Yes | QMessageBox::No );
+    QMessageBox::StandardButton value = 
+      QMessageBox::information(this,
+        "IGIPlanning:", "Unsaved point set exists. Proceed without saving current point set?",
+        QMessageBox::Yes | QMessageBox::No );
 
     if( value == QMessageBox::Yes )
-    {
-      
+    {    
     }
     else
     {
@@ -800,13 +809,9 @@ void IGIPlanningGUI::SaveConfiguration()
     return;
   }
 	
-  QDir currentDir = QDir::current();
-  currentDir.cdUp();
-  QString configDir = currentDir.absolutePath();
-
   /** Configuration in XML */
   QSettings::Format XmlFormat = QSettings::registerFormat("xml", readXmlFile, writeXmlFile);
-  QSettings::setPath(XmlFormat, QSettings::UserScope, configDir);
+  QSettings::setPath(XmlFormat, QSettings::UserScope, m_TutorialDir);
   QSettings::setDefaultFormat(XmlFormat);
 
   m_Settings = new QSettings(XmlFormat, 
@@ -842,8 +847,7 @@ void IGIPlanningGUI::SaveConfiguration()
   m_Settings->endGroup();
 
   QMessageBox::information(this,windowTitle(), 
-    QString("Configuration file saved as:\n") + configDir + "/" + 
-            IGIConfigurationData::CONFIGURATION_FOLDER + "/" + 
+    QString("Configuration file saved as:\n") + m_ConfigDir + "/" + 
             IGIConfigurationData::CONFIGURATION_NAME + ".xml");
 }
 
@@ -853,7 +857,7 @@ void IGIPlanningGUI::showHelp()
   helpBox->setWindowTitle("Help");
 
   QTextBrowser* browser = new QTextBrowser(helpBox); 
-  browser->setSource(*new QUrl("READMEPlanning.html"));
+  browser->setSource(QUrl::fromLocalFile(m_CurrentPath + "/READMEPlanning.html"));
   browser->setWindowTitle("Help");
 
   QPushButton* okButton = new QPushButton(helpBox);
@@ -978,6 +982,7 @@ void IGIPlanningGUI::OnCheckBoxToggled(QWidget * checkBox)
   QString cbxName = cbx->objectName();
   char cbxInitial = cbxName.toStdString().c_str()[0];
 
+  QString path = m_DatatDir + "/MeshModels";
   QString fName = "";
   if(cbx->isChecked())
   {
@@ -985,7 +990,7 @@ void IGIPlanningGUI::OnCheckBoxToggled(QWidget * checkBox)
 	  QString selectedFilter;
 	  fName = QFileDialog::getOpenFileName(this,
 		  "Select 3D model for tool.",
-		  "../Data/MeshModels",
+		  path,
 		  "3D model file (*.msh)",
 		  &selectedFilter,
 		  options);
@@ -1246,12 +1251,24 @@ void IGIPlanningGUI::ResliceImageCallback1( int value )
   PointType point;
   m_CTImageSpatialObject->TransformIndexToPhysicalPoint( index, point );
 
+  m_PickingTransform = PointToTransform(point);
+
   const double *data = point.GetVnlVector().data_block();
 
   m_AxialPlaneSpatialObject->RequestSetCursorPosition( data );
   m_SagittalPlaneSpatialObject->RequestSetCursorPosition( data );
   m_CoronalPlaneSpatialObject->RequestSetCursorPosition( data );
   m_CrossHair->RequestSetCursorPosition( data );
+
+  QString str1;
+  QString str2;
+  QString str3;
+  str1.append(QString("%1").arg(data[0]));
+  str2.append(QString("%1").arg(data[1]));
+  str3.append(QString("%1").arg(data[2]));
+
+  QString coord = "[ " + str1 + ", " + str2 + ", " + str3 + "]";    
+  m_PointCoordsAnnotation->RequestSetAnnotationText(0,coord.toStdString());
 }
 
 void IGIPlanningGUI::ResliceImageCallback2( int value )
@@ -1264,12 +1281,24 @@ void IGIPlanningGUI::ResliceImageCallback2( int value )
   PointType point;
   m_CTImageSpatialObject->TransformIndexToPhysicalPoint( index, point );
 
+  m_PickingTransform = PointToTransform(point);
+
   const double *data = point.GetVnlVector().data_block();
 
   m_AxialPlaneSpatialObject->RequestSetCursorPosition( data );
   m_SagittalPlaneSpatialObject->RequestSetCursorPosition( data );
   m_CoronalPlaneSpatialObject->RequestSetCursorPosition( data );
   m_CrossHair->RequestSetCursorPosition( data );
+
+  QString str1;
+  QString str2;
+  QString str3;
+  str1.append(QString("%1").arg(data[0]));
+  str2.append(QString("%1").arg(data[1]));
+  str3.append(QString("%1").arg(data[2]));
+
+  QString coord = "[ " + str1 + ", " + str2 + ", " + str3 + "]";    
+  m_PointCoordsAnnotation->RequestSetAnnotationText(0,coord.toStdString());
 }
 
 void IGIPlanningGUI::ResliceImageCallback3( int value )
@@ -1282,12 +1311,24 @@ void IGIPlanningGUI::ResliceImageCallback3( int value )
   PointType point;
   m_CTImageSpatialObject->TransformIndexToPhysicalPoint( index, point );
 
+  m_PickingTransform = PointToTransform(point);
+
   const double *data = point.GetVnlVector().data_block();
 
   m_AxialPlaneSpatialObject->RequestSetCursorPosition( data );
   m_SagittalPlaneSpatialObject->RequestSetCursorPosition( data );
   m_CoronalPlaneSpatialObject->RequestSetCursorPosition( data );
   m_CrossHair->RequestSetCursorPosition( data );
+
+  QString str1;
+  QString str2;
+  QString str3;
+  str1.append(QString("%1").arg(data[0]));
+  str2.append(QString("%1").arg(data[1]));
+  str3.append(QString("%1").arg(data[2]));
+
+  QString coord = "[ " + str1 + ", " + str2 + ", " + str3 + "]";    
+  m_PointCoordsAnnotation->RequestSetAnnotationText(0,coord.toStdString());
 }
 
 /** -----------------------------------------------------------------
@@ -1322,7 +1363,7 @@ void IGIPlanningGUI::LoadFiducials()
   handleMessage("IGIPlanningGUI::LoadFiducials called...\n", 0 );
 
   NewFiducialSet();
-  m_FiducialSet->LoadFiducialsFromXMLfile(m_WorldReference);
+  m_FiducialSet->LoadFiducialsFromXMLPath(m_ConfigDir, m_WorldReference);
 }
 
 void IGIPlanningGUI::AddNewFiducial()
@@ -1398,11 +1439,11 @@ void IGIPlanningGUI::SaveFiducials()
       handleMessage("Define three or more fiducials for registration.", 1);
       return;
     }
-    m_FiducialSetFilename = m_FiducialSet->SaveFiducials();
+    m_FiducialSetFilename = m_FiducialSet->SaveFiducials(m_ConfigDir);
   }
   else
   {
-    m_TargetSetFilename = m_FiducialSet->SaveFiducials();
+    m_TargetSetFilename = m_FiducialSet->SaveFiducials(m_ConfigDir);
   }
   m_CurrentPointSetSaved = true;
 }
@@ -1430,7 +1471,7 @@ void IGIPlanningGUI::OnQuitAction()
   }
 }
 
-bool IGIPlanningGUI::HasQuitted() 
+bool IGIPlanningGUI::HasQuit() 
 {
   return m_GUIQuit;
 }
@@ -1470,10 +1511,10 @@ void IGIPlanningGUI::ErrorObserver::Execute( const itk::Object * itkNotUsed(call
   it = this->m_ErrorEvent2ErrorMessage.find(className);
 
   if( it != this->m_ErrorEvent2ErrorMessage.end() )
-    {
+  {
     this->m_ErrorOccured = true;
     this->m_ErrorMessage = (*it).second;
-    }
+  }
   //if the event we got wasn't in the error events map then we
   //silently ignore it
 }

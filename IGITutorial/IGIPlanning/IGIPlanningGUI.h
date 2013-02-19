@@ -96,7 +96,7 @@ public:
   IGIPlanningGUI();
   virtual ~IGIPlanningGUI();
   void SetupView();
-  bool HasQuitted();
+  bool HasQuit();
 
 public slots:
   void PulseTimerEvent();
@@ -147,6 +147,11 @@ private:
   ctkRangeSlider*                                     m_WindowLevelSlider;
   int                                                 m_Window;
   int                                                 m_Level;
+  
+  QString                                             m_CurrentPath;
+  QString                                             m_ConfigDir;
+  QString                                             m_DatatDir;
+  QString                                             m_TutorialDir;
   
   /** Point set definition */
   FiducialSet*                                        m_FiducialSet;

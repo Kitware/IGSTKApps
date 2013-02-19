@@ -1,20 +1,20 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <title>IGI Navigation</title></head>
+  <title>Navigation</title></head>
 <body>
 
 <table border="1">
   <tbody><tr>
-   <td> This software was described
-in: "Image-Guided Navigation: A Cost Effective Practical Introduction
-using the Image-Guided Surgery Toolkit (IGSTK)", Ö. Güler, Z. Yaniv, <i>IEEE EMBC</i>, 2012.
+   <td> This software was written by&nbsp;Ö. Güler and Z. Yaniv.<br>
+   <p>Copyright (c) ISC Insight Software Consortium. All rights reserved.
+        See http://www.igstk.org/IGSTK/project/license.html for details.</p>
    </td>
   </tr>
 </tbody>
 </table>
 
 
-<a name="navigationProcess"></a><h3>IGI Navigation</h3>
+<a name="navigationProcess"></a><h3>Navigation</h3>
 <p>
 The navigation application illustrates the use of a standard image-guided navigation system. <u>Note that both the reference marker and the pointer tool's marker must be detected by the tracking systems at all times</u>. This is indicated by the corresponding LED colors, green detected, red not detected.
 </p>
@@ -41,7 +41,7 @@ If you haven't done so:
      </li>
      <li>
      <p>
-     Generate the navigation setup using the provided application.
+     Generate the navigation setup using the provided planning application.
      </p>
      </li>
 </ol>
@@ -51,8 +51,12 @@ If you haven't done so:
   <ol type="a">
      <li>
      <p> Press the
-"Load Configuration" button and select a configuration file (usually
-IGITutorial/Configuration/IGIConfiguration.xml). </p>
+"Load Configuration" button  (loads the file IGITutorial/Configuration/IGIConfiguration.xml). </p>
+     </li>
+     <li>
+     <p>
+     Check that the camera can see the area where you intend to navigate (popup window will close after a couple of seconds).
+     </p>
      </li>
      <li>
      <p> You will now identify
@@ -66,7 +70,7 @@ fiducials. </p>
      <p>
       Press the "Register" button.
      </p>
-     </li>     
+     </li>
 </ol>
 </li>
 <li>
@@ -104,4 +108,4 @@ space will be displayed.</p>
   </tr>
 </tbody></table>
 
-</body></html>
+</body></html> 

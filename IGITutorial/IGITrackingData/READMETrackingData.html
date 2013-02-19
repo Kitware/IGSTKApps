@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+</head>
+<body>
+
+<table border="1">
+  <tbody><tr>
+   <td> This software was written by&nbsp;Ö. Güler and Z. Yaniv.<br>
+   <p>Copyright (c) ISC Insight Software Consortium. All rights reserved.
+        See http://www.igstk.org/IGSTK/project/license.html for details.</p>
+   </td>
+  </tr>
+</tbody>
+</table>
+
+<h3>Tracking Data</h3>
+<p>This application acquires transformations for the user
+selected markers and writes them to corresponding files. File names
+have the following format "LogFile_IDxyz_n.txt", where "xyz" is the
+marker number and "n" is the acquisition number. This counter is
+incremented every time the user stops and starts a new acquisition
+without exiting the program. Files are written to the IGIConfiguration
+directory. Each line in the files has the following format:<br>
+time x y z qx qy qz qs<br>
+Where the first entry is a time stamp, the next three entries are the
+translation, the following four entries represent rotation as a unit
+quaternion. The first three entries are the vector part of the
+quaternion and the last entry is its scalar part.
+</p>
+<font color="red">
+<p>If a file already exists it will be overwritten.</p>
+</font>
+<p>To acquire tracking data you will need to follow the three
+step process described below:
+</p>
+<ol type="I">
+<li><b>Preparation</b>:
+<p>If you haven't done so: </p>
+<ol type="a">
+<li>
+<p>Perform camera calibration using the provided
+application. </p>
+</li>
+</ol>
+</li>
+<li><b>Initialization</b>:
+<ol type="a">
+<li>
+<p>Select the file containing your camera calibration
+(usually IGITutorial/Configuration/camera.yml).</p>
+</li>
+<li>
+<p>Select the markers you want to track.</p>
+</li>
+<li>
+<p>Press the "Initialize" button.</p>
+</li>
+<li>
+<p>Optionally, check that the camera can see the area
+where you intend to work (popup window will close after a couple of
+seconds).
+</p>
+</li>
+</ol>
+</li>
+<li><b>Acquire data</b>:
+<ol type="a">
+<li>
+<p>Press "Start" to start or continue transformation
+acquisition. You have 5s before the acquisition starts.
+</p>
+</li>
+<li>
+<p>Press "Stop" to end transformation acquisition. If you
+are dynamically acquiring data, that is the markers are undergoing
+motion you will need to block the line of sight before pressing the
+button so that you are not acquiring transformations for motion that is
+not relevant for your study.</p>
+</li>
+</ol>
+</li>
+</ol>
+<br>
+<h3>Program Shortcuts</h3>
+<table>
+<tbody>
+<tr>
+<td align="center">[c]</td>
+<td>Check camera view</td>
+</tr>
+<tr>
+<td align="center">[s]</td>
+<td>Toggle point aquisition</td>
+</tr> </tbody>
+</table>
+</body></html> 

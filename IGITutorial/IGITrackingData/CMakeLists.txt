@@ -1,0 +1,121 @@
+project(IGITrackingData)
+  
+cmake_minimum_required(VERSION 2.8)
+
+include_directories(
+  ${IGITrackingData_SOURCE_DIR}
+  ${IGITrackingData_BINARY_DIR}
+)
+
+#
+# Use IGSTK to do the pivot calibration (algorithm, transformation
+# xml writing...)
+# We require IGSTK version IGSTK_MIN_VERSION or later (ArucoTracker
+# was introduced in 5.0.0
+#
+set( IGSTK_MIN_VERSION 5.0.0 )
+
+find_package(IGSTK REQUIRED)
+
+set( IGSTK_VERSION ${IGSTK_VERSION_MAJOR}.${IGSTK_VERSION_MINOR}.${IGSTK_VERSION_PATCH} )
+
+if( ${IGSTK_VERSION} VERSION_LESS ${IGSTK_MIN_VERSION} )
+  message( FATAL_ERROR "This application requires IGSTK version ${IGSTK_MIN_VERSION} or later. Provided version is ${IGSTK_VERSION}.")
+else()
+  include(${IGSTK_USE_FILE} )
+  include_directories(
+  ${IGSTK_SOURCE_DIR}/Examples/TransformWriters
+  ${IGSTK_SOURCE_DIR}/Examples/TransformReaders
+  ${IGSTK_SOURCE_DIR}/Examples/Tools
+  ${IGSTK_SOURCE_DIR}/Utilities/Aruco/aruco-1.1.0_SRC
+  )
+endif()
+
+#
+# Use Qt as the GUI toolkit
+# 
+find_package(Qt4 REQUIRED)
+set(QT_USE_QTXML 1)
+include (${QT_USE_FILE} )
+ 
+#
+# Use OpenCV to actually do the tracking (used by the ArUco library)
+#
+find_package(OpenCV REQUIRED)
+include_directories(${OPENCV_INCLUDE_DIR})
+
+#
+# Description of the GUI used by Qt Designer
+#
+set(IGITrackingData_GUI_SRCS
+  IGITrackingDataGUI.ui
+  )
+  
+#
+# Resource files description used by Qt Designer
+#
+set(IGITrackingData_RCCS IGITrackingData.qrc)
+
+#
+# Generate rules for building source files from the resources
+#
+qt4_add_resources(IGITrackingData_RCC_SRCS ${IGITrackingData_RCCS})
+
+qt4_wrap_ui(IGITrackingData_QT_UI_SRCS ${IGITrackingData_GUI_SRCS})
+
+set(IGITrackingData_MOC_HEADERS
+  IGITrackingDataGUI.h
+  )
+
+if(WIN32)
+  set(WIN_RESOURCE_FILE IGITrackingData.rc)
+endif(WIN32)
+
+set(IGITrackingData_SRCS
+  ../IGIConfigurationData.h
+  ../IGIConfigurationData.cxx
+  main.cxx
+  IGITrackingDataGUI.h
+  IGITrackingDataGUI.cxx
+  ErrorManager.h
+  ErrorManager.cxx  
+  )
+
+qt4_wrap_cpp(IGITrackingData_MOC_SRCS ${IGITrackingData_MOC_HEADERS})
+
+add_executable(IGITrackingData WIN32 ${IGITrackingData_QT_UI_SRCS} ${IGITrackingData_RCC_SRCS} ${IGITrackingData_SRCS}
+                                ${IGITrackingData_MOC_SRCS} ${WIN_RESOURCE_FILE})
+
+
+SET(EXTRA_LIBS ${EXTRA_LIBS} 
+  IGSTK
+  Tools
+  TransformReaders
+  TransformWriters
+  ${QT_LIBRARIES}
+  ${OpenCV_LIBS}
+  )
+
+if(UNIX)
+  if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+    SET(EXTRA_LIBS ${EXTRA_LIBS} glib-2.0 rt gobject-2.0)
+  endif(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+endif(UNIX)
+
+target_link_libraries(IGITrackingData ${EXTRA_LIBS})
+                        
+#
+# Install the executable (belongs in the "apps4Developers" component)
+#
+install(TARGETS IGITrackingData
+        RUNTIME
+        DESTINATION Programs
+        COMPONENT apps4Developers)
+#
+# Install the Readme file which has to be in the same directory as
+# the executable
+#
+set(README_FILE READMETrackingData.html)
+install(FILES ${README_FILE}
+        DESTINATION Programs
+        COMPONENT apps4Developers)

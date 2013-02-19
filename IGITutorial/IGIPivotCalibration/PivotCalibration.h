@@ -15,41 +15,15 @@
 
 =========================================================================*/
 
-  /** \class PivotCalibration
-   *
-   *  \brief This class is a user interface (Qt-based) for the pivot calibration
-   *         class.
-   *
-   *  This class provides a UI for performing pivot calibration (tool tip
-   *  calibration). The class is responsible for acquisition of tracking data and
-   *  computation of the pivot calibration. You set the specific tool and
-   *  number of required transformations using the RequestInitialize() method.
-   *  You can also set a delay before data acquisition starts using the
-   *  RequestSetDelay() method. The class expects the tracker to be in tracking
-   *  state. Once initialized pressing the
-   *  "Calibrate" button will start data acquisition (after a user set delay) and
-   *  perform calibration. Corresponding events are also generated
-   *  for interested observers:
-   *  PivotCalibration::InitializationSuccessEvent
-   *  PivotCalibration::InitializationFailureEvent
-   *  PivotCalibration::DataAcquisitionStartEvent
-   *  PivotCalibration::DataAcquisitionEvent - contains the percentage of
-   *                                              data acquired
-   *  PivotCalibration::DataAcquisitionEndEvent
-   *  PivotCalibration::CalibrationSuccessEvent
-   *  PivotCalibration::CalibrationFailureEvent
-   *  igstk::CoordinateSystemTransformToEvent - contains the calibration transform
-   *  igstk::PointEvent - contains the pivot point
-   *  igstk::DoubleTypeEvent - contains the calibration root mean square error
-   *
-   *  NOTE: DataAcquisitionEvent is a descendant of DoubleTypeEvent so if you
-   *        are observing both of them with the same observer you need to
-   *        carefully identify them (when checking which event occurred check for
-   *        DataAcquisitionEvent and only after that for DoubleTypeEvent, similar
-   *        to the situation encountered when catching multiple exceptions from
-   *        the same inheritance hierarchy).
-   */
-
+/** \class PivotCalibration
+ *
+ *  \brief This class is a user interface (Qt-based) for the pivot calibration
+ *         class.
+ *
+ *  This class provides a UI for performing pivot calibration (tool tip
+ *  calibration). The class is responsible for acquisition of tracking data and
+ *  computation of the pivot calibration. 
+ */
 
 #ifndef __PivotCalibration_h
 #define __PivotCalibration_h
@@ -63,15 +37,14 @@
 
 #include "ui_PivotCalibration.h"
 
-class PivotCalibration :
-  public QMainWindow
+class PivotCalibration : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
   PivotCalibration();
 
-  bool HasQuitted();
+  bool HasQuit();
 
 public slots:
   void PulseTimerEvent();
@@ -79,7 +52,6 @@ public slots:
   void OnInitializationAction( );
   void OnCalibrationAction( );
   void setTransformationsValue(int  value);
-  void updateSecondsRemainingForCalibration();
   void showHelp();
   void CheckMarkerPosition();
 
@@ -98,7 +70,7 @@ private:
 
   //observer for write failure event
   typedef itk::MemberCommand<PivotCalibration>
-    WriteFailureObserverType;
+                            WriteFailureObserverType;
   void OnWriteFailureEvent( itk::Object *caller, 
                               const itk::EventObject & event );
 
@@ -206,13 +178,15 @@ private:
     void RequestCalibrationRMSE();
 
   private:
-     inline void RequestComputeCalibration();
+    inline void RequestComputeCalibration();
     //the igstk class that actually does everything
     igstk::PivotCalibration::Pointer m_pivotCalibration;
     //delay before data acquisition starts [milliseconds]
     unsigned int m_delay;
     //description of the tool we want to calibrate
     std::string m_currentToolInformation;
+    QString m_CurrentPath;
+    QString m_ConfigDir;
 
     //accumulate the calibration information in this stream and
     //then display to the user

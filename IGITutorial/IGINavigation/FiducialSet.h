@@ -28,12 +28,12 @@ public:
   void Clear();
   void AddView(QString name, igstk::View::Pointer view);
   ButtonSetWidget* GetButtonWidget();
-  void LoadFiducialsFromXMLfile( igstk::AxesObject::Pointer m_WorldReference);
+  void LoadFiducialsFromXMLPath(QString path, igstk::AxesObject::Pointer m_WorldReference);
   bool LoadFiducialsFromXMLfile(QString fName, igstk::AxesObject::Pointer m_WorldReference);
   QString GetNextAvailableFiducialId();
   void RemoveSelectedFiducial();
   void AddNewFiducial(PointType point);
-  QString SaveFiducials();
+  QString SaveFiducials(QString path);
   PointType GetPositionOfFiducial(QString fiducialId);
   QDomElement PointToNode( QDomDocument &d, PointType point, QString id );
   void RepositionFiducial( QString fiducialId,

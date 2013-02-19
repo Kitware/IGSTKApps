@@ -1,9 +1,9 @@
 /*=========================================================================
 
-  Program:   Image Guided Surgery Software Toolkit
+  Program:   IGI Pivot Calibration
   Module:  $RCSfile: PivotCalibration.cxx,v $
   Language:  C++
-  Date:    $Date: 2009-05-18 19:52:31 $
+  Date:    $Date: 2012-09-18 19:52:31 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) ISC  Insight Software Consortium.  All rights reserved.
@@ -81,10 +81,10 @@ PivotCalibration::PivotCalibration()
 
   //create transform observer
   this->m_TransformToObserver = TransformToObserver::New();
-         //create RMSE observer
+  //create RMSE observer
   this->m_RMSEObserver = RMSEObserver::New();
 
-         //create calibration success and failure observer
+  //create calibration success and failure observer
   this->m_CalibrationSuccessFailureObserver = CalibrationSuccessFailureObserverType::New();  
   this->m_CalibrationSuccessFailureObserver->SetCallbackFunction( 
   this,
@@ -120,6 +120,14 @@ PivotCalibration::PivotCalibration()
   this->m_Tracker->AddObserver( igstk::TrackerUpdateStatusErrorEvent(),
                 this->m_errorObserver );
 
+  // get current application path
+  QString path = QApplication::applicationDirPath();
+  QDir currentDir = QDir(path);
+  m_CurrentPath = currentDir.absolutePath();
+  
+  currentDir.cdUp();
+  m_ConfigDir = currentDir.absolutePath() + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
+  
   nrOfTransformations = 300;
   m_GUI.CalibrateButton->setEnabled(false);
   m_GUI.CheckPositionButton->setEnabled(false);
@@ -197,11 +205,12 @@ PivotCalibration::OnInitializationAction()
 
   // Set marker size in mm
   this->m_Tracker->SetMarkerSize(50);
+	
+  std::string calibFile = m_ConfigDir.toStdString()
+	                      + "/"
+	                      + IGIConfigurationData::CAMERA_CALIBRATION_FILENAME;
 
-  if(!this->m_Tracker->SetCameraParametersFromYAMLFile(std::string("../")
-    + std::string(IGIConfigurationData::CONFIGURATION_FOLDER)
-              + std::string("/")
-              + std::string(IGIConfigurationData::CAMERA_CALIBRATION_FILENAME)))
+  if(!this->m_Tracker->SetCameraParametersFromYAMLFile(calibFile))
   {
     QMessageBox::warning(0,"Warning",
     "Error loading camera calibration parameters from yml file.",
@@ -343,7 +352,7 @@ void PivotCalibration::OnQuitAction()
   m_GUIQuit = true;
 }
 
-bool PivotCalibration::HasQuitted( )
+bool PivotCalibration::HasQuit( )
 {
   return m_GUIQuit;
 }
@@ -389,10 +398,6 @@ PivotCalibration::OnCalibrationAction()
   this->m_pivotCalibration->RequestComputeCalibration();
 }
 
-void PivotCalibration::updateSecondsRemainingForCalibration()
-{
-}
-
 void
 PivotCalibration::RequestSetDelay( unsigned int delayInSeconds )
 {
@@ -418,14 +423,14 @@ PivotCalibration::RequestPivotPoint()
 }
 
 void
-PivotCalibration::OnInitializationEvent( itk::Object *caller,
-                        const itk::EventObject & event )
+PivotCalibration::OnInitializationEvent(itk::Object *caller,
+                                        const itk::EventObject & event )
 {
   if( dynamic_cast< const
         igstk::PivotCalibration::InitializationSuccessEvent * > (&event) )
   {
-  //activate "Calibrate" button
-  m_GUI.CalibrateButton->setEnabled(true);
+    //activate "Calibrate" button
+    m_GUI.CalibrateButton->setEnabled(true);
   }
   else if( dynamic_cast<
     const igstk::PivotCalibration::InitializationFailureEvent * > (&event) )
@@ -469,7 +474,7 @@ PivotCalibration::OnCalibrationEvent( itk::Object *caller,
     QMessageBox::warning(0,"Warning",
     msg.str().c_str(),
     QMessageBox::Ok );
-   }
+  }
   //calibration succeeded, get all the information
   //(Transformation, Pivot Point, RMSE) and display it
   else if( dynamic_cast<
@@ -519,10 +524,9 @@ PivotCalibration::OnCalibrationEvent( itk::Object *caller,
     m_GUI.InitializeButton->setEnabled(true);
     m_GUI.CheckPositionButton->setEnabled(true);
 
-    std::string file = (std::string("../")
-             + std::string(IGIConfigurationData::CONFIGURATION_FOLDER)
-             + std::string("/")
-             + std::string(IGIConfigurationData::TOOL_CALIBRATION_FILENAME));
+	  std::string file = m_ConfigDir.toStdString()
+                         + "/"
+                         + IGIConfigurationData::TOOL_CALIBRATION_FILENAME;
 
     igstk::PrecomputedTransformData::Pointer transformationData = 
     igstk::PrecomputedTransformData::New();
@@ -560,14 +564,10 @@ PivotCalibration::OnCalibrationEvent( itk::Object *caller,
                                          file );
     transformFileWriter->RequestWrite();
 
-    QDir currentDir = QDir::current();
-    currentDir.cdUp();
-    currentDir.absolutePath();
-    QMessageBox::information(this,windowTitle(),
+	  QMessageBox::information(this,windowTitle(),
         "Pointer tool successfully calibrated.\nCalibration file saved in: "
-        + currentDir.absolutePath() + "/" +
-        IGIConfigurationData::CONFIGURATION_FOLDER +
-        "[" + IGIConfigurationData::TOOL_CALIBRATION_FILENAME + "]");
+        + QString(file.c_str())
+        + " [" + IGIConfigurationData::TOOL_CALIBRATION_FILENAME + "]");
   }
 }
 
@@ -585,7 +585,7 @@ void PivotCalibration::showHelp()
   helpBox->setWindowTitle("Help");
 
   QTextBrowser* browser = new QTextBrowser(helpBox); 
-  browser->setSource(*new QUrl("READMEPivotCalibration.html"));
+  browser->setSource(QUrl::fromLocalFile(m_CurrentPath + "/READMEPivotCalibration.html"));
   browser->setWindowTitle("Help");
 
   QPushButton* okButton = new QPushButton(helpBox);
