@@ -8,3 +8,6 @@
   const char* IGIConfigurationData::TOOL_CALIBRATION_FILENAME = "ToolTip.xml";
   const char* IGIConfigurationData::TUTORIAL_NAME = "IGITutorial";
   const char* IGIConfigurationData::REGISTRATION_OUPUT_NAME = "RegistrationResult.xml";
+  const int IGIConfigurationData::CHECKERBOARD_WIDTH = 8;
+  const int IGIConfigurationData::CHECKERBOARD_HEIGHT = 5;
+

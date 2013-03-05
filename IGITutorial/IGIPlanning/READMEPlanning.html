@@ -1,81 +1,74 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-  <title>IGI Planning</title></head>
+<html><head><title>Planning</title>
+
+</head>
 <body>
 
 <table border="1">
   <tbody><tr>
-   <td> This software was described
-in: "Image-Guided Navigation: A Cost Effective Practical Introduction
-using the Image-Guided Surgery Toolkit (IGSTK)", Ö. Güler, Z. Yaniv, <i>IEEE EMBC</i>, 2012.
+   <td> This software was written by&nbsp;Ö. Güler and Z. Yaniv.<br>
+   <p>Copyright (c) ISC Insight Software Consortium. All rights reserved.
+        See http://www.igstk.org/IGSTK/project/license.html for details.</p>
    </td>
   </tr>
 </tbody>
 </table>
 
-
-<a name="planningProcess"></a><h3>IGI Planning</h3>
+<a name="planningProcess"></a>
+<h3>Planning</h3>
 <p>
-Prior to performing an image-guided navigation procedure some basic setup and planning is required.
-This program enables you to perform this task, generating a configuration file which is then used by the navigation program. </p>
-
+Prior to performing an image-guided navigation procedure some basic
+setup and planning is required.
+This program enables you to perform this task, generating a
+configuration file which is then used by the navigation program. </p>
 <p>
-To generate the desired setup you will need to follow the four step process described below:
+To generate the desired setup you will need to follow the four step
+process described below:
 </p>
-
 <ol type="I">
-<li> 
-<b>Preparation</b>:
-<p>
-If you haven't done so:
+<li> <b>Preparation</b>:
+<p>If you haven't done so:
 </p>
-  <ol type="a">
-     <li>
-     <p>
-     Perform camera calibration using the provided application.
-     </p>
-     </li>
-     <li>
-     <p>
-     Perform pivot calibration using the provided application.
-     </p>
-     </li>
-</ol>     
-</li>
-<li> 
-<b>Data Specification</b>:
-  <ol type="a">
-     <li>
-     <p> Select
-a directory containing a CT data set which will be used for navigation.
-We provide three data sets of a LEGO phantom (see
-IGITutorial/Data/CT/*). </p>
-     </li>
-     <li>
-     <p>
-      Select the file containing your camera calibration (usually IGITutorial/Configuration/camera.yml).</p>
-     </li>
-     <li>
-     <p>
-      Select the file containing your pointer tool calibration (usually IGITutorial/Configuration/ToolTip.xml).</p>
-     </li>
-     <li>
-     <p>
-Select a file containing a 3D model representing your pointer tool. We
-provide a default 3D representation,
-"IGITutorial/Data/MeshModels/ball.msh".</p>
-     </li>
-     <li>
-     <p>
-      Move to the next tab (arrow button)</p>
-     </li>
-</ol>
-</li>     
-
+<ol type="a">
 <li>
-<b>Tracker Setup</b>:
-<p>
-In this tab you will specify the tracked markers and how they should be
+<p> Perform camera calibration using the provided
+application. </p>
+</li>
+<li>
+<p> Perform pivot calibration using the provided
+application. </p>
+</li>
+</ol>
+</li>
+<li> <b>Data Specification</b>:
+<ol type="a">
+<li>
+<p> Select the directory containing the CT data set which will be used for navigation.
+We provide a data set of a LEGO phantom as part of the tutorial installation package [IGITutorial/Data/CT/Standard] and several others which can be downloaded from the tutorial web site (http://public.kitware.com/IGSTKWIKI/index.php/IGI_Tutorial)</a>. </p>
+</li>
+<li>
+<p> Select the file containing your camera calibration
+(usually IGITutorial/Configuration/camera.yml).</p>
+</li>
+<li>
+<p> Select the file containing your pointer tool
+calibration (usually IGITutorial/Configuration/ToolTip.xml).</p>
+</li>
+<li>
+<p>Select a file containing a 3D model representing your pointer tool. We
+provide a default 3D representation, "IGITutorial/Data/MeshModels/ball.msh".</p>
+</li>
+<li>
+Optionally modify how the CT is displayed using the Window/Level sliders (default is appropriate for our phantom).
+</li>
+<li>
+<p> Move to the next tab (arrow button)</p>
+</li>
+</ol>
+</li>
+<li><b>Tracker Setup</b>:
+<p>In this tab you will specify the tracked markers and how
+they should be
 used in the navigation program. A marker can be used in one of three
 ways: (1) Reference, this means that all measurements will be relative
 to this marker. Often this is referred to as a Dynamic Reference
@@ -85,30 +78,27 @@ the displayed images will be updated based on the location of the
 pointer's tip; (3) Tool, additional tools which will also be tracked
 and displayed in the 3D scene. After activating an additional tool a 3D
 model will be required. </p>
-  <ol type="a">
-     <li>
-     <p>
-      Select the markers associated with the reference and pointer. 
-     </p>
-     </li>
-     <li>
-     <p>
-      Select any additional tools you want.
-     </p>
-     </li>
-	 <li>
-     <p>
-      Move to the next tab (arrow button)</p>
-     </li>
+<ol type="a">
+<li>
+<p> Select the markers associated with the reference and
+pointer. </p>
+</li>
+<li>
+<p> Select any additional tools you want. </p>
+</li>
+<li>
+<p> Move to the next tab (arrow button)</p>
+</li>
 </ol>
 </li>
-
 <li>
 <b>Fiducial and Target Specification</b>:
-<p>
-In this tab you will specify the fiducials (markers) which later on you
+<p>In this tab you will specify the fiducials (markers) which
+later on you
 will need to identify in the physical world (during the navigation
-phase). <u>You need to specify three or more registration fiducials</u>. You can also specify target points to which you will be guided during the simulated intervention.
+phase). <u>You need to specify three or more registration
+fiducials</u>. You can also specify target points to which you
+will be guided during the simulated intervention.
 </p>
 <p>
 To pan an image, press the middle mouse button (or wheel) while moving.
@@ -116,35 +106,34 @@ To zoom in or out press the right mouse button while moving. To select
 a point, press the left mouse button when the cursor is at the desired
 location. Make sure that you can easily identify the fiducials you
 select in the image in the physical world. </p>
-  <ol type="a">
-     <li>
-     <p>
-      Press the "New Point Set" button or the  "Load Point Set" button if you want to modify an existing point set.
-     </p>
-     </li>
-     <li>
-     <p>
-Select a desired point and press the "Add New Point" button. If you
+<ol type="a">
+<li>
+<p> Press the "New Point Set" button or the "Load Point
+Set" button if you want to modify an existing point set. </p>
+</li>
+<li>
+<p>Select a desired point and press the "Add New Point"
+button. If you
 want to delete a point you need to select it in the "points tab" and
 press the "Delete Point" button. </p>
-     </li>
-     <li>
-     <p> Repeat the point selection
+</li>
+<li>
+<p> Repeat the point selection
 process as desired (remember, if you are defining registration
 fiducials you are required to provide at least three points). </p>
-     </li>
-     <li>
-     <p> Press the "Save Point Set"
+</li>
+<li>
+<p> Press the "Save Point Set"
 button. If the points you have defined should be used as fiducials then
 the "Registration points" checkbox should be checked, otherwise these
 are target points. </p>
-     </li>
-	 <li>
-     <p> Press the "Save
+</li>
+<li>
+<p> Press the "Save
 Configuration" button. The configuration file will be saved to
 (IGITutorial/Configuration/IGIConfiguration.xml) </p>
-     </li>
-  </ol>
 </li>
 </ol>
-</body></html>
+</li>
+</ol>
+</body></html> 

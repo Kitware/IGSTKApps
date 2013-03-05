@@ -72,17 +72,17 @@ QString FiducialSet::GetNextAvailableFiducialId()
   return 0;
 }
 
-void FiducialSet::LoadFiducialsFromXMLfile(igstk::AxesObject::Pointer m_WorldReference)
+void FiducialSet::LoadFiducialsFromXMLPath(QString path, igstk::AxesObject::Pointer m_WorldReference)
 {
   QString fName = QFileDialog::getOpenFileName(m_Parent,
       "Load Fiducial Set",
-      "./Configuration",
+      path,
       "Fiducials (*.xml)");
   
   if(fName.isNull())
     return;
 
-  if ( fName.isEmpty() )
+  if( fName.isEmpty() )
   {
     handleMessage("No fiducial set file [.xml] was selected\n", 1 );
     return;
@@ -203,17 +203,6 @@ void FiducialSet::RepositionFiducial(QString fiducialId,igstk::Transform newPosi
 
   m_FiducialPointVector[fiducialId]->RequestSetTransformAndParent(
   newPosition, m_WorldReference );
-
-  // remove current fiducial representations from views
-  /*std::map<QString,PointType>::iterator iFiducial;
-  for (iFiducial=m_Plan.begin(); iFiducial != m_Plan.end(); iFiducial++)
-  {
-    m_Views["axial"]->RequestRemoveObject( m_AxialFiducialRepresentationVector[iFiducial->first] );
-    m_Views["sagittal"]->RequestRemoveObject( m_SagittalFiducialRepresentationVector[iFiducial->first] );
-    m_Views["coronal"]->RequestRemoveObject( m_CoronalFiducialRepresentationVector[iFiducial->first] );
-    m_Views["view3D"]->RequestRemoveObject( m_3DViewFiducialRepresentationVector[iFiducial->first] );
-  } 
-  */
   
   // add new fiducial representation to the view
   m_Views["axial"]->RequestAddObject( m_AxialFiducialRepresentationVector[fiducialId] );
@@ -287,16 +276,12 @@ void FiducialSet::AddNewFiducial(PointType point)
 /**
  *  Write the image fiducials to file
  */
-QString FiducialSet::SaveFiducials()
-{
-  QDir currentDir = QDir::current();
-  currentDir.cdUp();
-  QString configDir = currentDir.absolutePath();
-
+QString FiducialSet::SaveFiducials(QString path)
+{  
   QString fileName = QFileDialog::getSaveFileName(
          m_Parent,
          "Save Fiducial Set as...",
-         configDir+QString("/Configuration"),
+         path,
          "Fiducial Set (*.xml)" );
 
   m_FiducialSetFilename = fileName;
@@ -315,7 +300,7 @@ QString FiducialSet::SaveFiducials()
 
   QFile file( m_FiducialSetFilename );
   if( !file.open( QIODevice::WriteOnly ) )
-    return 0;
+    return NULL;
 
   QTextStream ts( &file );
   ts << doc.toString();

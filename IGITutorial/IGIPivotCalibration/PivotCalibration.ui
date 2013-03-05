@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>367</width>
-    <height>524</height>
+    <width>395</width>
+    <height>586</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,12 +37,18 @@
              <item>
               <widget class="QLabel" name="label_2">
                <property name="text">
-                <string>Select pointer tool marker id:</string>
+                <string>Select pointer tool marker ID:</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QComboBox" name="idBox">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>50</height>
+                </size>
+               </property>
                <property name="iconSize">
                 <size>
                  <width>40</width>
@@ -222,7 +228,7 @@
         <item>
          <widget class="QPushButton" name="CheckPositionButton">
           <property name="text">
-           <string>Check Marker Position</string>
+           <string>Check Camera View</string>
           </property>
           <property name="shortcut">
            <string>C</string>

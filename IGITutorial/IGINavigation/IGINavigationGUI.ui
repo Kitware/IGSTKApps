@@ -105,7 +105,7 @@
          <item>
           <widget class="QPushButton" name="CheckPositionButton">
            <property name="text">
-            <string>Check Marker Position</string>
+            <string>Check Camera View</string>
            </property>
           </widget>
          </item>

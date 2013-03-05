@@ -52,7 +52,7 @@ class IGINavigationGUI : public QMainWindow, ErrorManager
   Q_OBJECT
 
   /** typedef for View */
-  typedef igstk::View      ViewType;
+  typedef igstk::View         ViewType;
   typedef igstk::View2D       View2DType;
   typedef igstk::View3D       View3DType;
 
@@ -62,7 +62,7 @@ class IGINavigationGUI : public QMainWindow, ErrorManager
   /** typedef for CT image spatial objects */
   typedef CTImageReaderType::ImageSpatialObjectType   CTImageSpatialObjectType;
 
-  typedef itk::MemberCommand<IGINavigationGUI>      ProgressCommandType;
+  typedef itk::MemberCommand<IGINavigationGUI>        ProgressCommandType;
 
   /** Image reslice representation */
   typedef igstk::ImageResliceObjectRepresentation< CTImageSpatialObjectType >
@@ -107,7 +107,7 @@ public:
   IGINavigationGUI();
   virtual ~IGINavigationGUI();
   void SetupView();
-  bool HasQuitted();
+  bool HasQuit();
 
 
 public slots:
@@ -138,6 +138,9 @@ private:
   AxesObjectRepresentationType::Pointer               m_WorldReferenceRepresentation;
   igstk::Annotation2D::Pointer                        m_PointCoordsAnnotation;
 
+  QString                                             m_CurrentPath;
+  QString                                             m_ConfigDir;
+  QString                                             m_TutorialDir;
 
   QString                                             m_PointerToolCalibrationFile;
   QString                                             m_ReferenceId;
@@ -312,8 +315,8 @@ private:
   void OnITKProgressEvent(itk::Object *source, const itk::EventObject &);
   void AcceptingRegistration();
   bool LoadToolCalibrationTransform(QString transformFile);
-  void StoreTransformInXMLFormat(igstk::Transform transform);
   void SceneObjectsVisibility(double opacity);
+  void StoreTransformInXMLFormat(igstk::Transform transform);
 
   /** -----------------------------------------------------------------
   *  Construct an error observer for all the possible errors that occur in

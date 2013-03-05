@@ -1,19 +1,21 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-  <title>Camera Calibration</title></head>
+<html><head><title>Camera Calibration</title>
+
+</head>
 <body>
 
 <table border="1">
   <tbody><tr>
-   <td> This software was described
-in: "Image-Guided Navigation: A Cost Effective Practical Introduction
-using the Image-Guided Surgery Toolkit (IGSTK)", Ö. Güler, Z. Yaniv, <i>IEEE EMBC</i>, 2012.
+   <td> This software was written by&nbsp;Ö. Güler and Z. Yaniv.<br>
+   <p>Copyright (c) ISC Insight Software Consortium. All rights reserved.
+        See http://www.igstk.org/IGSTK/project/license.html for details.</p>
    </td>
   </tr>
 </tbody>
 </table>
 
-<a name="calibrationProcess"></a><h3>Camera Calibration</h3>
+<a name="calibrationProcess"></a>
+<h3>Camera Calibration</h3>
 <p>
 To enable the use of your computer's camera as a tracking device we
 first need to calibrate it. The calibration process is straightforward
@@ -23,96 +25,104 @@ and only requires acquisition of several images.
 To calibrate your camera you will need to follow the four step
 process described below:
 </p>
-
 <ol type="I">
-
 <li> <b>Preparation</b>:
-  <ol type="a">
-     <li>
-     <p>
-     Print the calibration and validation patterns
-     (IGITutorial/Data/Calibration/*.pdf). <u>Make sure that the square size in
-     the validation pattern is 30mm</u>.</p>
-
-    </li>
-    <li>
-     Attach both patterns to rigid planar surfaces. Two sides of a
-     hard cover book should do nicely.
-     </li>
-   </ol>
-
-</li><li> <b>Image acquisition</b>:
-  <ol type="a">
-     <li><p>Press the "Start Camera" button (shortcut key: [s]) to initialize the camera.</p></li>
-  <li>
-     <p>
-     Position the calibration grid in front of the camera and press the
-     "Capture" button (shortcut key: [space]).</p>
-     <p>
-     <u>Take five or more images</u> of the calibration pattern in
-     different orientations and positions. The more images the more
-     accurate the calibration.
-     </p><p>
-     </p><p>
-     All images are saved to a temporary subdirectory where the
-     programs were installed (IGITutorial/Programs/tmp). You can
-     delete this directory after calibration.
-    </p><p>
-
-  </p></li></ol>
- </li>
-
+<ol type="a">
+<li>
+<p> Print the calibration and validation patterns
+(IGITutorial/Data/Calibration/*.pdf). <u>Make sure that the
+square size in the validation pattern is 30mm</u>.</p>
+</li>
+<li> Attach both patterns to rigid planar surfaces. Two
+sides of a hard cover book should do nicely. </li>
+<li>
+Disable auto-focus, if your camera has this feature. This is done using the camera control software that
+came with your camera. If you don't know how to do this you will have to work at about the same distance from your camera at all times.
+</li>
+</ol>
+<p> </p>
+</li>
+<li> <b>Image acquisition</b>:
+<ol type="a">
+<li>
+<p>Press the "Start Camera" button (shortcut key: [s]) to
+initialize the camera.</p>
+</li>
+<li>
+<p> Position the calibration grid in front of the camera
+and press the "Capture" button (shortcut key: [space]).</p>
+<p> <u>Take five or more images</u> of the
+calibration pattern in different orientations and positions. The more
+images the more accurate the calibration. </p>
+<p> </p>
+<p> All images are saved to a temporary subdirectory
+where the programs were installed (IGITutorial/Programs/tmp). You can
+delete this directory after calibration. </p>
+<p> </p>
+</li>
+</ol>
+</li>
 <li> <b>Camera calibration</b>:
-  <ol type="a">
-    <li><p>Press the "Calibrate" button (shortcut key: [c]). A file selection dialog opens and you need to <u>select five or more images</u>
+<ol type="a">
+<li>
+<p>Press the "Calibrate" button (shortcut key: [c]). A
+file selection dialog opens and you need to <u>select five or
+more images</u>
 of the calibration pattern. The pattern is detected in each of the
-images and the result is displayed in a popup window which is
-automatically closed. If the pattern is successfully detected in enough
+images and the result is displayed. If the pattern is successfully detected in enough
 images then the camera is calibrated and the result is saved in a file
 named "camera.uml" in a subdirectory where the tutorial was installed
 (IGITutorial/Configuration).</p>
-        </li>
-  </ol>
 </li>
-
+</ol>
+</li>
 <li> <b>Validation</b>:
-  <ol type="a">
-    <li><p> Position
+<ol type="a">
+<li>
+<p> Position
 validation grid in front of the camera and press "Validate" button
 (shortcut key: [v]). If the validation pattern is detected in the
 image, a popup window will open and the estimated distance between two
-of the pattern's squares will be overlaid onto the image. <u>This should be approximately 60mm.</u> If this varies significantly from the expected value then the calibration is not accurate enough and should be repeated.
-         </p>
-        </li>
-  </ol>
+of the pattern's squares will be overlaid onto the image. <u>This
+should be approximately 60mm.</u> If this varies significantly
+from the expected value (>2mm) then the calibration is not accurate enough and
+should be repeated. </p>
+</li>
+</ol>
 </li>
 </ol>
 Note that once you have images of the calibration pattern you can
-calibrated the camera immediately after starting the program.
+calibrate the camera immediately after starting the program.
 Similarly, once the camera is calibrated you can validate the
 calibration without re-calibrating.
-<a name="programShortcuts"></a><h3>Program Shortcuts</h3>
-
+<a name="programShortcuts"></a>
+<h3>Program Shortcuts</h3>
 <table>
-  <tbody>
-  <tr>
-   <td align="center">[s]</td><td>Start camera</td>
-  </tr>
-  <tr>
-   <td align="center">[space]</td><td>Capture video frame</td>
-  </tr>
-  <tr>
-   <td align="center">[c]</td><td>Calibrate camera</td>
-  </tr>
-  <tr>
-   <td align="center">[v]</td><td>Validate camera calibration</td>
-  </tr>
-  <tr>
-   <td align="center">[h]</td><td>Show help dialog</td>
-  </tr>
-  <tr>
-   <td align="center">[q]</td><td>Quit Application</td>
-  </tr>
-</tbody></table>
-
-</body></html>
+<tbody>
+<tr>
+<td align="center">[s]</td>
+<td>Start camera</td>
+</tr>
+<tr>
+<td align="center">[space]</td>
+<td>Capture video frame</td>
+</tr>
+<tr>
+<td align="center">[c]</td>
+<td>Calibrate camera</td>
+</tr>
+<tr>
+<td align="center">[v]</td>
+<td>Validate camera calibration</td>
+</tr>
+<tr>
+<td align="center">[h]</td>
+<td>Show help dialog</td>
+</tr>
+<tr>
+<td align="center">[q]</td>
+<td>Quit Application</td>
+</tr>
+</tbody>
+</table>
+</body></html> 

@@ -72,11 +72,11 @@ QString FiducialSet::GetNextAvailableFiducialId()
   return 0;
 }
 
-void FiducialSet::LoadFiducialsFromXMLfile(igstk::AxesObject::Pointer m_WorldReference)
+void FiducialSet::LoadFiducialsFromXMLPath(QString path, igstk::AxesObject::Pointer m_WorldReference)
 {
   QString fName = QFileDialog::getOpenFileName(m_Parent,
       "Load Fiducial Set",
-      "./Configuration",
+      path,
       "Fiducials (*.xml)");
   
   if(fName.isNull())
@@ -286,32 +286,32 @@ void FiducialSet::AddNewFiducial(PointType point)
 /**
  *  Write the image fiducials to file
  */
-QString FiducialSet::SaveFiducials()
-{
+QString FiducialSet::SaveFiducials(QString path)
+{  
   QString fileName = QFileDialog::getSaveFileName(
-         m_Parent,
-         "Save Fiducial Set as...",
-         QDir::currentPath()+QString("/Configuration"),
-         "Fiducial Set (*.xml)" );
-
+                                                  m_Parent,
+                                                  "Save Fiducial Set as...",
+                                                  path,
+                                                  "Fiducial Set (*.xml)" );
+  
   m_FiducialSetFilename = fileName;
-
+  
   QDomDocument doc( "FiducialSet" );
   QDomElement root = doc.createElement( "Fiducials" );
   doc.appendChild( root );
-
+  
   std::map<QString,PointType>::iterator iFiducial;
   for (iFiducial=m_Plan.begin(); iFiducial != m_Plan.end(); iFiducial++)
   {
     root.appendChild(PointToNode(doc, 
-                                  m_Plan[iFiducial->first], 
-                                  iFiducial->first));
+                                 m_Plan[iFiducial->first], 
+                                 iFiducial->first));
   }
-
+  
   QFile file( m_FiducialSetFilename );
   if( !file.open( QIODevice::WriteOnly ) )
-  return 0;
-
+    return NULL;
+  
   QTextStream ts( &file );
   ts << doc.toString();
   file.close();

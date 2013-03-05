@@ -1,10 +1,10 @@
 /*=========================================================================
 
-  Program:   Image Guided Surgery Software Toolkit
+  Program:   IGI Pivot Calibration
   Module:    $RCSfile: main.cxx,v $
   Language:  C++
-  Date:      $Date: 2009-03-20 15:25:38 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 20012-09-20 15:25:38 $
+  Version:   $Revision: 1.0 $
 
   Copyright (c) ISC  Insight Software Consortium.  All rights reserved.
   See IGSTKCopyright.txt or http://www.igstk.org/copyright.htm for details.

@@ -14,38 +14,40 @@
  *
  */
 
-class ImageCapture : public QObject{
+class ImageCapture : public QObject
+{
   Q_OBJECT
+
 public:
   ImageCapture( QObject * parent = NULL );
   ~ImageCapture();
-  std::vector<int> getAvailableCameras();
-  void stopTimer() { m_timer->stop(); }
-  void startTimer() { m_timer->start(); };
-public slots:
-  bool captureFromCamera( int cameraIndex = -1 );
-  void flipImage( bool on );          // switch image flipping on / off
-  void stopCapture();
-  IplImage* getCurrentFrame();
 
+  void StopTimer() 
+       { m_Timer->stop(); }
+  void StartTimer() 
+       { m_Timer->start(); };
+
+public slots:
+  void StopCapture();
+  IplImage* GetCurrentFrame();
+  bool CaptureFromCamera( int cameraIndex = -1 );
   /** Save captured file to image file */
-  void captureToFile();
+  void CaptureToFile(std::string path);
 
 protected slots:
   /** Trigger image capture */
-  void timerTick();
+  void TimerTick();
 
 signals:
-  void imageCaptured( const QImage& image );
-  void error( const QString& text );
+  void ImageCaptured( const QImage& image );
+  void Error( const QString& text );
 
 protected:
   /** Convert OpenCV image data to QImage */
-  QImage convert( IplImage * image );
+  QImage Convert( IplImage * image );
 
-  CvCapture * m_cvCap;
-  bool m_flipImage;
-  QTimer * m_timer;
+  CvCapture * m_CvCap;
+  QTimer * m_Timer;
 };
 
 #endif

@@ -20,163 +20,168 @@ using namespace cv;
 using namespace std;
 
 CameraCalibration::CameraCalibration():m_Canvas(NULL)
-{
-}
+{}
 
 CameraCalibration::~CameraCalibration(void)
 {
-  cvReleaseMat(&rotVector);
-  cvReleaseMat(&translationVector);
-  cvReleaseMat(&intrinsicMatrix);
-  cvReleaseMat(&distortionCoeffs);
-  cvReleaseMat(&rotMatrix);
+  cvReleaseMat(&m_AllObjectPoints);
+  cvReleaseMat(&m_AllImagePoints);
+  cvReleaseMat(&m_AllDetectedPoints);
+  cvReleaseMat(&m_RotVector);
+  cvReleaseMat(&m_TranslationVector);
+  cvReleaseMat(&m_IntrinsicMatrix);
+  cvReleaseMat(&m_DistortionCoeffs);
+  cvReleaseMat(&m_RotMatrix);
 }
 
-void CameraCalibration::setPoints(double squareSize=1)
+void CameraCalibration::SetPoints(double squareSize=1)
 {
-  allObjectPoints = cvCreateMat(m_images.size()* cornersN, 3, CV_32FC1); // 3D-Koordinaten der (verzerrten) Eckpunkte des Schachbrettmusters
-  allImagePoints = cvCreateMat(m_images.size()* cornersN, 2, CV_32FC1); // 2D-Koordinaten der (verzerrten) Eckpunkte im Kamerabild
-  allDetectedPoints = cvCreateMat(m_images.size(), 1, CV_32SC1); // Anzahl Eckpunkte in den Bildern
+  m_AllObjectPoints = cvCreateMat(m_Images.size()* m_CornersN, 3, CV_32FC1); 
+  m_AllImagePoints = cvCreateMat(m_Images.size()* m_CornersN, 2, CV_32FC1);
+  m_AllDetectedPoints = cvCreateMat(m_Images.size(), 1, CV_32SC1);
 
-  for (int i = 0; i < m_images.size(); i++) { // erkannte Bilder durchlaufen
-    CV_MAT_ELEM( *allDetectedPoints, int, i, 0 ) = m_cornerCount[i];
-    for(int y = 0; y < cornersY; y++ )
+  for (int i = 0; i < m_Images.size(); i++)
+  {
+    CV_MAT_ELEM( *m_AllDetectedPoints, int, i, 0 ) = m_CornerCount[i];
+    for(int y = 0; y < m_CornersY; y++ )
     {
-      for(int x = 0; x < cornersX; x++ )
+      for(int x = 0; x < m_CornersX; x++ )
       {
-        CV_MAT_ELEM( *allImagePoints, float, x + y * cornersX + i * cornersX * cornersY, 0 ) = m_corners[i][x + y * cornersX].x;
-        CV_MAT_ELEM( *allImagePoints, float, x + y * cornersX + i * cornersX * cornersY, 1 ) = m_corners[i][x + y * cornersX].y;
+        CV_MAT_ELEM( *m_AllImagePoints, float, x + y * m_CornersX + i * m_CornersX * m_CornersY, 0 ) = m_Corners[i][x + y * m_CornersX].x;
+        CV_MAT_ELEM( *m_AllImagePoints, float, x + y * m_CornersX + i * m_CornersX * m_CornersY, 1 ) = m_Corners[i][x + y * m_CornersX].y;
           
-        CV_MAT_ELEM( *allObjectPoints, float,x + y * cornersX + i * cornersX * cornersY , 0 ) = x * squareSize;
-        CV_MAT_ELEM( *allObjectPoints, float,x + y * cornersX + i * cornersX * cornersY, 1 ) = y * squareSize;
-        CV_MAT_ELEM( *allObjectPoints, float, x + y * cornersX + i * cornersX * cornersY, 2 ) = 0.0;
+        CV_MAT_ELEM( *m_AllObjectPoints, float,x + y * m_CornersX + i * m_CornersX * m_CornersY , 0 ) = x * squareSize;
+        CV_MAT_ELEM( *m_AllObjectPoints, float,x + y * m_CornersX + i * m_CornersX * m_CornersY, 1 ) = y * squareSize;
+        CV_MAT_ELEM( *m_AllObjectPoints, float, x + y * m_CornersX + i * m_CornersX * m_CornersY, 2 ) = 0.0;
       }
     }
   }
 }
 
-void CameraCalibration::calibrateCameraEnd(CvSize imageSize)
+void CameraCalibration::CalibrateCamera(CvSize imageSize)
 {
-  intrinsicMatrix = cvCreateMat(3, 3, CV_64F);
-  distortionCoeffs = cvCreateMat(1, 4, CV_64F);
-  rotVector = cvCreateMat(m_images.size(), 3, CV_64F);
-  rotMatrix = cvCreateMat(3, 3, CV_64F);
-  translationVector = cvCreateMat(m_images.size(), 3, CV_64F);
+  m_IntrinsicMatrix = cvCreateMat(3, 3, CV_64F);
+  m_DistortionCoeffs = cvCreateMat(1, 4, CV_64F);
+  m_RotVector = cvCreateMat(m_Images.size(), 3, CV_64F);
+  m_RotMatrix = cvCreateMat(3, 3, CV_64F);
+  m_TranslationVector = cvCreateMat(m_Images.size(), 3, CV_64F);
 
-  cvSetIdentity(intrinsicMatrix);
-  cvZero(distortionCoeffs);
+  cvSetIdentity(m_IntrinsicMatrix);
+  cvZero(m_DistortionCoeffs);
 
-  cvCalibrateCamera2(allObjectPoints,allImagePoints,allDetectedPoints,imageSize,
-                intrinsicMatrix, distortionCoeffs, rotVector, translationVector,0);
+  cvCalibrateCamera2(m_AllObjectPoints,
+                     m_AllImagePoints,
+                     m_AllDetectedPoints,
+                     imageSize,
+                     m_IntrinsicMatrix,
+                     m_DistortionCoeffs,
+                     m_RotVector,
+                     m_TranslationVector,0);
 }
 
-IplImage* CameraCalibration::getGrayImage(IplImage* imageRGB)
+IplImage* CameraCalibration::GetGrayImage(IplImage* imageRGB)
 {
   IplImage *imageGray = cvCreateImage( cvGetSize(imageRGB), 8, 1 );
   cvCvtColor( imageRGB, imageGray, CV_BGR2GRAY );
   return imageGray;
 }
 
-int CameraCalibration::findChessboardCorners(IplImage* image)
+int CameraCalibration::FindChessboardCorners(IplImage* image)
 { 
   int cornersDetected = 0;
-  tempPoints.resize(cornersN);
+  m_TempPoints.resize(m_CornersN);
 
-  int result = cvFindChessboardCorners(
-  image, cvSize(cornersX, cornersY),
-    &tempPoints[0], &cornersDetected,
-    CV_CALIB_CB_ADAPTIVE_THRESH
-  );
+  IplImage *imageGray = GetGrayImage(image);
+  int result = cvFindChessboardCorners(imageGray,
+                                       cvSize(m_CornersX, m_CornersY),
+                                       &m_TempPoints[0], &cornersDetected,
+                                       CV_CALIB_CB_ADAPTIVE_THRESH);
 
-  printf("Corners detected = %d\n",cornersDetected);
-  cvDrawChessboardCorners(image,cvSize(cornersX,cornersY),&tempPoints[0],cornersDetected,result);
- 
+  cvDrawChessboardCorners(image,cvSize(m_CornersX,m_CornersY),&m_TempPoints[0],cornersDetected,result);
+
   // Display the image
-	displayImage(image);
-	// Give system a chance to update the GUI
+  DisplayImage(image);
+  // Give system a chance to update the GUI
   QApplication::processEvents();
-  //cvWaitKey(9);
-
+  
+  // wait 1 sec
 #ifdef _WIN32
   Sleep(1000);
 #else
-  sleep(1);  // wait 1 sec
+  sleep(1);
 #endif
 
-
-
-  if(result && cornersDetected == cornersN)
+  if(result && cornersDetected == m_CornersN)
   {
-    cvFindCornerSubPix(
-      image,&tempPoints[0], cornersDetected,
-      cvSize(11, 11), cvSize(-1,-1),
-      cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,30, 0.01));
+    cvFindCornerSubPix(imageGray,&m_TempPoints[0],
+                       cornersDetected,
+                       cvSize(11, 11),
+                       cvSize(-1,-1),
+                       cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,
+                                      30,
+                                      0.01));
 
     CvPoint2D32f* newPoints = new CvPoint2D32f[cornersDetected];
-    for (int i = 0; i < cornersDetected; i++) newPoints[i] = tempPoints[i];
+    for (int i = 0; i < cornersDetected; i++) 
+      newPoints[i] = m_TempPoints[i];
 
-    m_cornerCount.push_back(cornersDetected);
-    m_corners.push_back(newPoints);
-    m_images.push_back(image);
+    m_CornerCount.push_back(cornersDetected);
+    m_Corners.push_back(newPoints);
+    m_Images.push_back(image);
   }
-  return cornersDetected;
+  cvReleaseImage(&imageGray);
+  // it is not enough that corners are detected, also the pattern
+  // has to be found. If result = 0 (no pattern detected) then 
+  // false is returned
+  return result ? cornersDetected : false;
 }
 
-bool CameraCalibration::calibrate(vector<IplImage*> imageSet)
+bool CameraCalibration::StartCalibration(vector<IplImage*> imageSet, std::string savePath, std::string saveName)
 {
   int nrValidImages = 0;
   for(vector<IplImage*>::iterator it = imageSet.begin();it!=imageSet.end();it++)
   {
     IplImage* imgIn = *it;
-    IplImage *imageGray = getGrayImage(imgIn);
   
-    imageSize = cvGetSize(imageGray);
-    int cornersFound = findChessboardCorners(imageGray);
-    if(cornersFound == cornersN)
+    m_ImageSize = cvGetSize(imgIn);
+    int cornersFound = FindChessboardCorners(imgIn);
+    if(cornersFound == m_CornersN)
       nrValidImages++;
   }
 
   if (nrValidImages < IGIConfigurationData::NR_CALIBRATION_IMAGES)
     return false;
 
-  setPoints();
-  calibrateCameraEnd(imageSize);
+  SetPoints();
+  CalibrateCamera(m_ImageSize);
 
   CvSize boardSize;
   boardSize.height=5;
   boardSize.width=8;
   float squareSize = 1.f, aspectRatio = 1.f;
   int flags = 0;
-  bool writeExtrinsics = false;
   vector<CvMat> emptyMat;
   vector<float> emptyFloat;
-  double totalAvgErr = 0;
-
-  std::string path(std::string("../")
-              + std::string(IGIConfigurationData::CONFIGURATION_FOLDER));
-
-  std::string file(std::string("../")
-              + std::string(IGIConfigurationData::CONFIGURATION_FOLDER)
-              + std::string("/")
-              + std::string(IGIConfigurationData::CAMERA_CALIBRATION_FILENAME));
 
   struct stat sb;
 
-  if (!(stat(path.c_str(), &sb) == 0 && (sb.st_mode & S_IFDIR)))
+  if (!(stat(savePath.c_str(), &sb) == 0 && (sb.st_mode & S_IFDIR)))
   {
-    QDir().mkdir(path.c_str());
+    QDir().mkdir(savePath.c_str());
   }
 
-  saveCameraParams(file,
-              imageSize,
+  std::string saveFileName = savePath + "/" + saveName;
+  
+  SaveCameraParams(saveFileName,
+              m_ImageSize,
               boardSize, squareSize, aspectRatio,
-              flags, intrinsicMatrix, distortionCoeffs,
+              flags, m_IntrinsicMatrix, m_DistortionCoeffs,
               emptyMat,
               emptyMat);
   return true;
 }
 
-vector<IplImage*> CameraCalibration::setImageSeries(std::vector<std::string> filenames)
+vector<IplImage*> CameraCalibration::SetImageSeries(std::vector<std::string> filenames)
 {
   IplImage* imageTmp;
   std::vector<IplImage*> imageVectorConatiner;
@@ -190,7 +195,7 @@ vector<IplImage*> CameraCalibration::setImageSeries(std::vector<std::string> fil
       continue;
     }
 
-    imageTmp= cvLoadImage( fileName, 1);
+    imageTmp = cvLoadImage( fileName, 1);
 
     if(!imageTmp)
     {
@@ -198,14 +203,13 @@ vector<IplImage*> CameraCalibration::setImageSeries(std::vector<std::string> fil
     }
     else
     {
-      std::cerr << imageVectorConatiner.size() << ". Image name: " << fileName << std::endl;
       imageVectorConatiner.push_back(imageTmp);
     }
   }
   return imageVectorConatiner;
 }
 
-void CameraCalibration::saveCameraParams( const string& filename,
+void CameraCalibration::SaveCameraParams( const string& filename,
                        CvSize imageSize, CvSize boardSize,
                        float squareSize, float aspectRatio, int flags,
                        const CvMat* cameraMatrix, const CvMat* distCoeffs,
@@ -232,12 +236,12 @@ void CameraCalibration::saveCameraParams( const string& filename,
 
     if( flags != 0 )
     {
-        sprintf( buf, "flags: %s%s%s%s",
-            flags & CV_CALIB_USE_INTRINSIC_GUESS ? "+use_intrinsic_guess" : "",
-            flags & CV_CALIB_FIX_ASPECT_RATIO ? "+fix_aspectRatio" : "",
-            flags & CV_CALIB_FIX_PRINCIPAL_POINT ? "+fix_principal_point" : "",
-            flags & CV_CALIB_ZERO_TANGENT_DIST ? "+zero_tangent_dist" : "" );
-        cvWriteComment( *fs, buf, 0 );
+      sprintf( buf, "flags: %s%s%s%s",
+              flags & CV_CALIB_USE_INTRINSIC_GUESS ? "+use_intrinsic_guess" : "",
+              flags & CV_CALIB_FIX_ASPECT_RATIO ? "+fix_aspectRatio" : "",
+              flags & CV_CALIB_FIX_PRINCIPAL_POINT ? "+fix_principal_point" : "",
+              flags & CV_CALIB_ZERO_TANGENT_DIST ? "+zero_tangent_dist" : "" );
+      cvWriteComment( *fs, buf, 0 );
     }
 
     fs << "flags" << flags;
@@ -246,16 +250,45 @@ void CameraCalibration::saveCameraParams( const string& filename,
     fs << "distortion_coefficients" << distCoeffs;
 }
 
-	// Display the processed image on the given canvas.
-	// The canvas is a QLabel object stored in m_Canvas.
-	void CameraCalibration::displayImage( IplImage *image ){
-		// Do nothing if no display canvas is assigned
-		if (!m_Canvas)
-			return;
+// Display the processed image on the given canvas.
+// The canvas is a QLabel object stored in m_Canvas.
+void CameraCalibration::DisplayImage( IplImage *image )
+{
+  // Do nothing if no display canvas is assigned
+  if (!m_Canvas)
+    return;
 
-		// Convert the IplImage to QImage without copying data
-		QImage img = QImage((uchar*)image->imageData, image->width, image->height, QImage::Format_Indexed8);
-	  const QPixmap pix = QPixmap::fromImage(img);
-	  const QSize size = m_Canvas->size();
-		m_Canvas->setPixmap(pix.scaled(size, Qt::KeepAspectRatio));
-	}
+  QImage qImage;
+  if (image) 
+  {
+    // nChannels: 3, depth: 8
+    // colorModel: "RBG", channelSeq: "BGR"
+    if ( (image->depth == IPL_DEPTH_8U) && (image->nChannels == 3) )
+	  {
+      qImage = QImage(image->width, image->height, QImage::Format_RGB32);
+      int x, y;
+      char* data = image->imageData;
+      
+      for( y = 0; y < image->height; y++, data += image->widthStep )
+        for( x = 0; x < image->width; x++ )
+        {
+          uint *p = (uint*)qImage.scanLine(y) + x;
+          *p = qRgb(data[x * image->nChannels+2],
+                data[x * image->nChannels+1],
+                data[x * image->nChannels]);
+        } // end for x
+    }
+	  else 
+    {
+	    qImage = QImage(image->width, image->height, QImage::Format_Invalid);
+    }
+  }
+  else 
+  {
+    qImage = QImage(image->width, image->height, QImage::Format_Invalid);
+  }
+ 
+  const QPixmap pix = QPixmap::fromImage(qImage);
+  const QSize size = m_Canvas->size();
+  m_Canvas->setPixmap(pix.scaled(size, Qt::KeepAspectRatio));
+}

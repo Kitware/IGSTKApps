@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+  <title>Remote Control</title></head>
+<body>
+
+<table border="1">
+  <tbody><tr>
+   <td> This software was written by&nbsp;Ö. Güler and Z. Yaniv.<br>
+   <p>Copyright (c) ISC Insight Software Consortium. All rights reserved.
+        See http://www.igstk.org/IGSTK/project/license.html for details.</p>
+   </td>
+  </tr>
+</tbody>
+</table>
+
+<a name="remoteProcess"></a><h3>Remote Control</h3>
+<p>
+This program allows you to control a power point presentation using your computer's webcam and
+a set of markers. It is a toy example showing how a tracking device can be used as part
+of a computer human interface.</p>
+
+<ol type="I">
+<li>
+<b>Preparation</b>:
+<p>
+If you haven't done so:
+</p>
+  <ol type="a">
+     <li>
+     <p>
+     Perform camera calibration using the provided application.
+     </p>
+     </li>
+     <li>
+     <p>
+     Print the tracked marker patterns
+    (IGITutorial/Data/TrackedMarkers/markers.pdf), and separate the markers
+    along the dashed lines. <u>Make sure that the internal, black, marker square size is 50mm</u>.</p></li><li><p>Cut them out and attach to a rigid planar surface. A standard index card is
+    sufficiently rigid for our purposes.
+     </p>
+     </li>
+</ol>
+</li>
+
+<li>
+<b>Use the remote</b>:
+  <ol type="a">
+     <li>
+     <p>
+     Check that the camera can see the area where you intend to work, "Check Camera View". Popup window will close after a couple of seconds.
+     </p>
+     </li>
+     <li>
+     <p>When the program is running and a marker is visible to the camera it
+    will:</p>
+    <ul>
+    <li>marker 202: send a "Page Down" keystroke to the application that has focus.</li>
+    <li>marker 502: send a "Page Up" keystroke to the application that has focus.</li>
+    <li>marker 201: terminate the remote control program.</li>
+    </ul>
+     </li>
+  </ol>
+</li>
+</ol>
+
+<font color="red"><p>Remember to switch focus to the program you want to control. If the focus is on the "Remote Control" application nothing will happen.</p></font>
+
+</body>
+</html> 

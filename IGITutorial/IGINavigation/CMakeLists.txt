@@ -83,8 +83,6 @@ set(IGINavigation_SRCS
   ErrorManager.cxx  
   FiducialSet.h
   FiducialSet.cxx
-  ButtonSetWidget.h
-  ButtonSetWidget.cxx
   XMLSettings.h
   )
 

@@ -60,10 +60,13 @@ Windows 7
 =========
 --Permission issues--
 Installing the IGITutorial in the system program folder can cause permission
-problems if your windows user account does not have administrator privileges.
-In this case either run the programs with administrator privileges (right click on
-the application and choose "run as administrator") or install the IGITutorial on
-another place where you have permissions to create new folders and files.
+problems. Either 
+a) Install the IGITutorial in another place where you have permissions to create
+new folders and files.
+
+b) Change the User Account Control (UAC) settings for the Administrator:
+Search in the Start box for "uac" and run "Change User Account Settings".
+Lower UAC to "Never notify".
 ----
 
 
@@ -71,6 +74,8 @@ another place where you have permissions to create new folders and files.
 The IGITutorial compiles fine with VTK 5.8.0, the newer version VTK 5.10 
 causes following error: 
   ITK'MetaEvent' : is not a member of 'global namespace'
+either use VTK 5.8.0 or compile VTK 5.10 with:
+VTK_USE_METAIO = Off
 ----
 
 --Install error--
@@ -89,7 +94,7 @@ The range slider uses QScopedPointer. This class was introduced in Qt 4.6.
 
 Apple Mac OS X
 ==============
-Select "Unix Makefiles" as generator
+Select "Unix Makefiles" as makefile generator
 Set GCC for both C and C++ compilation in CMake
 
 

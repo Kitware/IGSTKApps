@@ -36,6 +36,14 @@ IGINavigationGUI::IGINavigationGUI()
   m_GUI.progressBar->setValue( 0);
   m_TrackerRMS = 0.0;
   
+  // get current application path
+  QString path = QApplication::applicationDirPath();
+  QDir currentDir = QDir(path);
+  m_CurrentPath = currentDir.absolutePath();  
+  currentDir.cdUp();
+  m_TutorialDir = currentDir.absolutePath();
+  m_ConfigDir = currentDir.absolutePath() + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;  
+  
   m_GUI.LEDlabelDRF->hide();
   m_GUI.LEDlabelTool->hide();
   m_GUI.labelDRF->hide();
@@ -50,9 +58,9 @@ IGINavigationGUI::IGINavigationGUI()
 
   vtkOutputWindow* outputWindow = vtkOutputWindow::GetInstance();
   if ( outputWindow )
-    {
+  {
     outputWindow->SetInstance( fileOutputWindow );
-    }
+  }
 
   /** SCENE GRAPH: origin world reference */
   m_WorldReference  = igstk::AxesObject::New();
@@ -115,11 +123,15 @@ void IGINavigationGUI::CreateActions()
 
 void IGINavigationGUI::SetupView()
 {
-  //Create views
+  // Create views
   m_ViewAxial = View2DType::New();
   m_ViewSagittal = View2DType::New();
   m_ViewCoronal = View2DType::New();
   m_View3D = View3DType::New();
+
+  m_ViewAxial->RequestSetOrientation(View2DType::Axial);
+  m_ViewSagittal->RequestSetOrientation(View2DType::Sagittal);
+  m_ViewCoronal->RequestSetOrientation(View2DType::Coronal);
 
   // Set IGSTK view for Qt display
   m_GUI.Display3D->RequestSetView (m_View3D);
@@ -155,8 +167,7 @@ bool IGINavigationGUI::LoadImageAction()
 
   /** Setup image reader  */
   CTImageReaderType::Pointer CTImageReader        = CTImageReaderType::New();
-  CTImageReader->SetLogger( this->GetLogger() );
-
+  
   /** Build itk progress command to assess image load progress */
   itk::SmartPointer<ProgressCommandType>            progressCommand;
   progressCommand = ProgressCommandType::New();
@@ -347,19 +358,16 @@ void IGINavigationGUI::ConnectImageRepresentation()
   
   // create reslice plane representation for axial view
   m_AxialPlaneRepresentation = CTImageRepresentationType::New();
-  m_AxialPlaneRepresentation->SetFrameColor(1,0,0);
   m_AxialPlaneRepresentation->RequestSetImageSpatialObject( m_CTImageSpatialObject );
   m_AxialPlaneRepresentation->RequestSetReslicePlaneSpatialObject( m_AxialPlaneSpatialObject );
 
   // create reslice plane representation for sagittal view
   m_SagittalPlaneRepresentation = CTImageRepresentationType::New();
-  m_SagittalPlaneRepresentation->SetFrameColor(0,1,0);
   m_SagittalPlaneRepresentation->RequestSetImageSpatialObject( m_CTImageSpatialObject );
   m_SagittalPlaneRepresentation->RequestSetReslicePlaneSpatialObject( m_SagittalPlaneSpatialObject );
 
   // create reslice plane representation for coronal view
   m_CoronalPlaneRepresentation = CTImageRepresentationType::New();
-  m_CoronalPlaneRepresentation->SetFrameColor(0,0,1);
   m_CoronalPlaneRepresentation->RequestSetImageSpatialObject( m_CTImageSpatialObject );
   m_CoronalPlaneRepresentation->RequestSetReslicePlaneSpatialObject( m_CoronalPlaneSpatialObject );
 
@@ -408,7 +416,7 @@ void IGINavigationGUI::ConnectImageRepresentation()
   m_View3D->RequestAddObject( m_SagittalPlaneRepresentation2 );
   m_View3D->RequestAddObject( m_CoronalPlaneRepresentation2 );
 
-  m_PointCoordsAnnotation->RequestSetFontColor( 0, 1.0, 0.0, 0.0 ); 
+  m_PointCoordsAnnotation->RequestSetFontColor( 0.0, 1.0, 0.0, 0.0 ); 
 
   m_View3D->RequestAddAnnotation2D(m_PointCoordsAnnotation);
 
@@ -418,25 +426,21 @@ void IGINavigationGUI::ConnectImageRepresentation()
 
   // buid the cross hair representations
   m_AxialCrossHairRepresentation = CrossHairRepresentationType::New();
-  //m_AxialCrossHairRepresentation->SetColor(0,1,0);
   m_AxialCrossHairRepresentation->SetOpacity(1);
   m_AxialCrossHairRepresentation->SetLineWidth(2);
   m_AxialCrossHairRepresentation->RequestSetCrossHairObject( m_CrossHair );
 
   m_SagittalCrossHairRepresentation = CrossHairRepresentationType::New();
-  //m_SagittalCrossHairRepresentation->SetColor(0,1,0);
   m_SagittalCrossHairRepresentation->SetOpacity(1);
   m_SagittalCrossHairRepresentation->SetLineWidth(2);
   m_SagittalCrossHairRepresentation->RequestSetCrossHairObject( m_CrossHair );
 
   m_CoronalCrossHairRepresentation = CrossHairRepresentationType::New();
-  //m_CoronalCrossHairRepresentation->SetColor(0,1,0);
   m_CoronalCrossHairRepresentation->SetOpacity(1);
   m_CoronalCrossHairRepresentation->SetLineWidth(2);
   m_CoronalCrossHairRepresentation->RequestSetCrossHairObject( m_CrossHair );
   //delete 3D cross har
   m_3DViewCrossHairRepresentation = CrossHairRepresentationType::New();
-  //m_3DViewCrossHairRepresentation->SetColor(1,1,0);
   m_3DViewCrossHairRepresentation->SetOpacity(1);
   m_3DViewCrossHairRepresentation->SetLineWidth(2);
   m_3DViewCrossHairRepresentation->RequestSetCrossHairObject( m_CrossHair );
@@ -445,7 +449,6 @@ void IGINavigationGUI::ConnectImageRepresentation()
   m_ViewAxial->RequestAddObject( m_AxialCrossHairRepresentation );
   m_ViewSagittal->RequestAddObject( m_SagittalCrossHairRepresentation );
   m_ViewCoronal->RequestAddObject( m_CoronalCrossHairRepresentation );
-  //m_View3D->RequestAddObject( m_3DViewCrossHairRepresentation );
 
   /**
   *  Request information about the slice bounds. The answer will be
@@ -582,8 +585,7 @@ bool IGINavigationGUI::InitializeTrackerAction()
     return false;
   }
   else   //attach the tools 
-  {    
-   
+  {
     m_ArucoTrackerTool = igstk::ArucoTrackerTool::New();
     m_ArucoTrackerTool->RequestSetMarkerName(m_PointerId.toInt());
     m_ArucoTrackerTool->SetCalibrationTransform(m_ToolCalibrationTransform);
@@ -627,7 +629,6 @@ bool IGINavigationGUI::InitializeTrackerAction()
     m_MeshMap[XMLmarkerId]->RequestSetTransformAndParent( identity, m_ArucoTrackerToolMap[markerId] );
   }
  
-
   // TrackerToolAvailableObserver
   m_TrackerToolAvailableObserver = LoadedObserverType::New();
   m_TrackerToolAvailableObserver->SetCallbackFunction( this,
@@ -736,9 +737,9 @@ bool IGINavigationGUI::LoadToolCalibrationTransform(QString transformFile)
     if( transformObserver->GotTransformRequest() )
     {
       igstk::TransformBase *transformData = 
-      transformObserver->GetTransformRequest();
+        transformObserver->GetTransformRequest();
       igstk::Transform *toolCalibrationTransform = 
-      dynamic_cast<igstk::Transform*>( transformData );
+        dynamic_cast<igstk::Transform*>( transformData );
       m_ToolCalibrationTransform = *toolCalibrationTransform;
     }
     else
@@ -838,18 +839,6 @@ void IGINavigationGUI::SceneObjectsVisibility(double opacity)
 {
   m_MeshRepresentationMap[m_PointerId]->SetOpacity(opacity);
 
-  m_AxialPlaneRepresentation->SetOpacity(opacity);
-  m_SagittalPlaneRepresentation->SetOpacity(opacity);
-  m_CoronalPlaneRepresentation->SetOpacity(opacity);
-  m_AxialPlaneRepresentation2->SetOpacity(opacity);
-  m_SagittalPlaneRepresentation2->SetOpacity(opacity);
-  m_CoronalPlaneRepresentation2->SetOpacity(opacity);
-
-  m_AxialCrossHairRepresentation->SetOpacity(opacity);
-  m_SagittalCrossHairRepresentation->SetOpacity(opacity);
-  m_CoronalCrossHairRepresentation->SetOpacity(opacity);
-  m_3DViewCrossHairRepresentation->SetOpacity(opacity);
-
   m_FiducialSet->SetOpacity(opacity);
   m_TargetSet->SetOpacity(opacity);
 }
@@ -862,7 +851,7 @@ void IGINavigationGUI::ToolAvailableCallback(const itk::EventObject & event )
 
   if (!m_ReferenceNotAvailable)
   {
-    SceneObjectsVisibility(1);
+    SceneObjectsVisibility(0.6);
   }
 }
 
@@ -873,7 +862,7 @@ void IGINavigationGUI::ToolNotAvailableCallback(const itk::EventObject & event )
 
   m_GUI.LEDlabelTool->setPixmap(QPixmap(QString::fromUtf8(":/Images/Images/redLED.png")));
 
-  SceneObjectsVisibility(0.2);
+  SceneObjectsVisibility(0.0);
 }
 
 /** Callback for reference tool available */
@@ -885,7 +874,7 @@ void IGINavigationGUI::ReferenceAvailableCallback(const itk::EventObject & event
 
   if (!m_ToolNotAvailable)
   {
-    SceneObjectsVisibility(1);
+    SceneObjectsVisibility(0.6);
   }
 }
 
@@ -896,7 +885,7 @@ void IGINavigationGUI::ReferenceNotAvailableCallback(const itk::EventObject & ev
 
   m_GUI.LEDlabelDRF->setPixmap(QPixmap(QString::fromUtf8(":/Images/Images/redLED.png")));
 
-  SceneObjectsVisibility(0.2);
+  SceneObjectsVisibility(0.0);
 }
 
 /** -----------------------------------------------------------------
@@ -916,10 +905,10 @@ void IGINavigationGUI::CalculateRegistrationAction()
   {
     QString key = keys[i];
     registration->RequestAddImageLandmarkPoint(
-    m_FiducialSet->GetPositionOfFiducial(key));
+      m_FiducialSet->GetPositionOfFiducial(key));
   
     registration->RequestAddTrackerLandmarkPoint(
-    m_LandmarksContainer[key]);
+      m_LandmarksContainer[key]);
   }   
 
   registration->RequestComputeTransform();
@@ -964,7 +953,7 @@ void IGINavigationGUI::CalculateRegistrationAction()
   }
   else
   {
-    handleMessage("Tracker Registration failed \n", 1 );
+    handleMessage("Registration failed (possibly collinear fiducial configuration).\n", 1 );
   }
 return;
 }
@@ -996,6 +985,10 @@ void IGINavigationGUI::AcceptingRegistration()
   m_CoronalPlaneSpatialObject->RequestSetToolSpatialObject( m_MeshMap[m_PointerId] );
   m_CrossHair->RequestSetToolSpatialObject( m_MeshMap[m_PointerId] );
 
+  m_GUI.AxialSlider->setEnabled(false);
+  m_GUI.SagittalSlider->setEnabled(false);
+  m_GUI.CoronalSlider->setEnabled(false);
+  m_PointCoordsAnnotation->RequestSetFontColor( 1.0, 1.0, 1.0, 0.0 ); 
   // reset the cameras in the different views
   ResetCamera();
 }
@@ -1281,20 +1274,15 @@ void IGINavigationGUI::LoadConfiguration()
   m_MeshRepresentationMap.clear();
   m_CTImageSpatialObject = NULL;
 
-  QDir currentDir = QDir::current();
-  currentDir.cdUp();
-  QString configDir = currentDir.absolutePath();
-
   /** Load configuration */
   QSettings::Format XmlFormat = QSettings::registerFormat("xml", readXmlFile, writeXmlFile);
-  QSettings::setPath(XmlFormat, QSettings::UserScope, configDir);
+  QSettings::setPath(XmlFormat, QSettings::UserScope, m_TutorialDir);
   QSettings::setDefaultFormat(XmlFormat);
 
-  std::string file(std::string("../")
-    + std::string(IGIConfigurationData::CONFIGURATION_FOLDER)
+  std::string file = m_ConfigDir.toStdString()
               + std::string("/")
               + std::string(IGIConfigurationData::CONFIGURATION_NAME)
-              + std::string(".xml"));
+              + std::string(".xml");
 
   struct stat sb;
   if (!( stat(file.c_str(), &sb) == 0) )
@@ -1510,7 +1498,7 @@ void IGINavigationGUI::showHelp()
   helpBox->setWindowTitle("Help");
 
   QTextBrowser* browser = new QTextBrowser(helpBox); 
-  browser->setSource(*new QUrl("READMENavigation.html"));
+  browser->setSource(QUrl::fromLocalFile(m_CurrentPath + "/READMENavigation.html"));
   browser->setWindowTitle("Help");
 
   QPushButton* okButton = new QPushButton(helpBox);
@@ -1543,7 +1531,7 @@ void IGINavigationGUI::OnQuitAction()
   }
 }
 
-bool IGINavigationGUI::HasQuitted() 
+bool IGINavigationGUI::HasQuit() 
 {
   return m_GUIQuit;
 }
@@ -1560,16 +1548,30 @@ IGINavigationGUI::~IGINavigationGUI()
   delete m_GUI.DisplaySagittal;
 }
 
+void IGINavigationGUI::CheckMarkerPosition()
+{
+  cv::Mat currentImage = m_ArucoTracker->GetCurrentVideoFrame(); 
+  cv::imshow("video",currentImage);
+  cv::waitKey(2000);
+  cv::destroyWindow("video");
+}
+
+void 
+IGINavigationGUI::OnWriteFailureEvent( itk::Object * itkNotUsed(caller), 
+                            const itk::EventObject & itkNotUsed(event) )
+{
+  handleMessage("Failed writing registration result to file.", 1);
+}
+
 /** -----------------------------------------------------------------
 *  Function saves a transformation to file in XML format
 *--------------------------------------------------------------------
 */
 void IGINavigationGUI::StoreTransformInXMLFormat(igstk::Transform transform)
 {
-  std::string file = (std::string("../")
-                + std::string(IGIConfigurationData::CONFIGURATION_FOLDER)
-                + std::string("/")
-                + std::string(IGIConfigurationData::REGISTRATION_OUPUT_NAME));
+  std::string file = m_ConfigDir.toStdString()
+                       + std::string("/")
+                       + std::string(IGIConfigurationData::REGISTRATION_OUPUT_NAME);
 
   igstk::PrecomputedTransformData::Pointer transformationData = 
   igstk::PrecomputedTransformData::New();
@@ -1605,21 +1607,6 @@ void IGINavigationGUI::StoreTransformInXMLFormat(igstk::Transform transform)
   transformFileWriter->RequestSetData( transformationData,  
                                       file );
   transformFileWriter->RequestWrite();
-}
-
-void IGINavigationGUI::CheckMarkerPosition()
-{
-  cv::Mat currentImage = m_ArucoTracker->GetCurrentVideoFrame(); 
-  cv::imshow("video",currentImage);
-  cv::waitKey(2000);
-  cv::destroyWindow("video");
-}
-
-void 
-IGINavigationGUI::OnWriteFailureEvent( itk::Object * itkNotUsed(caller), 
-                            const itk::EventObject & itkNotUsed(event) )
-{
-  handleMessage("Failed writing registration result to file.", 1);
 }
 
 /** -----------------------------------------------------------------

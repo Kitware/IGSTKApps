@@ -22,60 +22,52 @@ class CameraCalibration
 {
 public:
   CameraCalibration();
-
   virtual ~CameraCalibration();
-
-  bool calibrate(vector<IplImage*> imageSet);
-  void saveCameraParams( const string& filename,
-                CvSize imageSize, CvSize boardSize,
-                float squareSize, float aspectRatio, int flags,
-                const CvMat* cameraMatrix, const CvMat* distCoeffs,
-                const vector<CvMat>& rvecs, const vector<CvMat>& tvecs);
-
-  void setPoints(double squareSize);
-
+  void SetPoints(double squareSize);
   // Set the Canvas on which to display the processed image
-	void setDisplayCanvas(QLabel *Canvas) {m_Canvas = Canvas;};
+	void SetDisplayCanvas(QLabel *Canvas) {m_Canvas = Canvas;};
+  IplImage* GetGrayImage(IplImage* imageRGB);
+  std::vector<IplImage*> SetImageSeries(std::vector<std::string> filenames);
+  bool StartCalibration(vector<IplImage*> imageSet, std::string savePath, std::string saveName);
 
-  IplImage* getGrayImage(IplImage* imageRGB);
-  std::vector<IplImage*> setImageSeries(std::vector<std::string> filenames);
+  void SaveCameraParams( const string& filename,
+                          CvSize imageSize, CvSize boardSize,
+                          float squareSize, float aspectRatio, int flags,
+                          const CvMat* cameraMatrix, const CvMat* distCoeffs,
+                          const vector<CvMat>& rvecs, const vector<CvMat>& tvecs);
 
-  int cornersX;
-  int cornersY;
-  int cornersN;
+  int m_CornersX;
+  int m_CornersY;
+  int m_CornersN;
 
 private:
-	// Display the processed image on the canvas m_Canvas
-	void displayImage(IplImage *image);
-  int findChessboardCorners(IplImage* image);
-  void calibrateCameraEnd(CvSize imageSize);
+  // Display the processed image on the canvas m_Canvas
+  void DisplayImage(IplImage *image);
+  int FindChessboardCorners(IplImage* image);
+  void CalibrateCamera(CvSize imageSize);
 
   // The canvas on which to draw processed images
-	QLabel *m_Canvas;
+  QLabel *m_Canvas;
 
   // parameter for calibration
-  vector<CvPoint2D32f> tempPoints; 
-  vector<CvPoint3D32f> objectPoints;
-  vector<CvPoint2D32f> points;
-  vector<int> npoints;
+  vector<CvPoint2D32f> m_TempPoints; 
+  vector<CvPoint3D32f> m_ObjectPoints;
+  vector<CvPoint2D32f> m_Points;
 
-  vector<int> m_cornerCount;
-  vector<IplImage*> m_images;
-  vector<CvPoint2D32f*> m_corners;
+  vector<int> m_CornerCount;
+  vector<IplImage*> m_Images;
+  vector<CvPoint2D32f*> m_Corners;
 
-  CvMat* allObjectPoints;
-  CvMat* allImagePoints;
-  CvMat* allDetectedPoints;
-  CvSize imageSize;
+  CvMat* m_AllObjectPoints;
+  CvMat* m_AllImagePoints;
+  CvMat* m_AllDetectedPoints;
+  CvSize m_ImageSize;
 
-  bool calibrationInited;
-  bool calibrationDone;
-
-  CvMat* translationVector;
-  CvMat* intrinsicMatrix;
-  CvMat* distortionCoeffs;
-  CvMat* rotMatrix;
-  CvMat* rotVector;
+  CvMat* m_TranslationVector;
+  CvMat* m_IntrinsicMatrix;
+  CvMat* m_DistortionCoeffs;
+  CvMat* m_RotMatrix;
+  CvMat* m_RotVector;
 };
 
 #endif /* CAMERA_CALIBRATION_H_ */
