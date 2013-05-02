@@ -13,14 +13,14 @@ std::string ValidateCameraCalibration::
 {
   IplImage* imgGrayscale = cvCreateImage(cvGetSize(img), 8, 1);
   cvCvtColor(img, imgGrayscale, CV_BGR2GRAY);
-  vector<cv::Point2f> ptvec;
+  std::vector<cv::Point2f> ptvec;
   ptvec.resize(boardSize.width * boardSize.height);
   bool found = cv::findChessboardCorners(cv::Mat(imgGrayscale),
                                          boardSize, 
                                          ptvec, 
                                          0);
 
-  vector<cv::Point3f> points3D;
+  std::vector<cv::Point3f> points3D;
     for( int i = 0; i < boardSize.height; i++ )
         for( int j = 0; j < boardSize.width; j++ )
             points3D.push_back(cv::Point3f(float(j*squareSize),
@@ -47,7 +47,7 @@ std::string ValidateCameraCalibration::
     return "Validation pattern not detected.\nPosition validation pattern properly in front of the camera.";
   }
 
-  vector<cv::Point3f> points3DleftRectangle;
+  std::vector<cv::Point3f> points3DleftRectangle;
   points3DleftRectangle.push_back(points3D.at(0));
   points3DleftRectangle.push_back(points3D.at(1));
   points3DleftRectangle.push_back(points3D.at(4));
@@ -55,7 +55,7 @@ std::string ValidateCameraCalibration::
   points3DleftRectangle.push_back(points3D.at(8));
   points3DleftRectangle.push_back(points3D.at(9));
 
-  vector<cv::Point3f> points3DrightRectangle;
+  std::vector<cv::Point3f> points3DrightRectangle;
   points3DrightRectangle.push_back(points3D.at(2));
   points3DrightRectangle.push_back(points3D.at(3));
   points3DrightRectangle.push_back(points3D.at(6));
@@ -63,7 +63,7 @@ std::string ValidateCameraCalibration::
   points3DrightRectangle.push_back(points3D.at(10));
   points3DrightRectangle.push_back(points3D.at(11));
 
-  vector<cv::Point2f> points2DleftImageRectangle;
+  std::vector<cv::Point2f> points2DleftImageRectangle;
   points2DleftImageRectangle.push_back(ptvec.at(0));
   points2DleftImageRectangle.push_back(ptvec.at(1));
   points2DleftImageRectangle.push_back(ptvec.at(4));
@@ -71,7 +71,7 @@ std::string ValidateCameraCalibration::
   points2DleftImageRectangle.push_back(ptvec.at(8));
   points2DleftImageRectangle.push_back(ptvec.at(9));
 
-  vector<cv::Point2f> points2DrightImageRectangle;
+  std::vector<cv::Point2f> points2DrightImageRectangle;
   points2DrightImageRectangle.push_back(ptvec.at(2));
   points2DrightImageRectangle.push_back(ptvec.at(3));
   points2DrightImageRectangle.push_back(ptvec.at(6));
@@ -137,7 +137,7 @@ std::string ValidateCameraCalibration::
   return "";
 }
 
-bool ValidateCameraCalibration::ReadCameraMatrix(const string& filename,
+bool ValidateCameraCalibration::ReadCameraMatrix(const std::string& filename,
                              cv::Mat& mCam32, cv::Mat& mdist32,
                              cv::Size& calibratedImageSize )
 {

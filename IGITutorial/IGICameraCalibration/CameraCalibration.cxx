@@ -16,9 +16,6 @@
 
 #include "../IGIConfigurationData.h"
 
-using namespace cv;
-using namespace std;
-
 CameraCalibration::CameraCalibration():m_Canvas(NULL)
 {}
 
@@ -136,10 +133,10 @@ int CameraCalibration::FindChessboardCorners(IplImage* image)
   return result ? cornersDetected : false;
 }
 
-bool CameraCalibration::StartCalibration(vector<IplImage*> imageSet, std::string savePath, std::string saveName)
+bool CameraCalibration::StartCalibration(std::vector<IplImage*> imageSet, std::string savePath, std::string saveName)
 {
   int nrValidImages = 0;
-  for(vector<IplImage*>::iterator it = imageSet.begin();it!=imageSet.end();it++)
+  for(std::vector<IplImage*>::iterator it = imageSet.begin();it!=imageSet.end();it++)
   {
     IplImage* imgIn = *it;
   
@@ -160,8 +157,8 @@ bool CameraCalibration::StartCalibration(vector<IplImage*> imageSet, std::string
   boardSize.width=8;
   float squareSize = 1.f, aspectRatio = 1.f;
   int flags = 0;
-  vector<CvMat> emptyMat;
-  vector<float> emptyFloat;
+  std::vector<CvMat> emptyMat;
+  std::vector<float> emptyFloat;
 
   struct stat sb;
 
@@ -181,7 +178,7 @@ bool CameraCalibration::StartCalibration(vector<IplImage*> imageSet, std::string
   return true;
 }
 
-vector<IplImage*> CameraCalibration::SetImageSeries(std::vector<std::string> filenames)
+std::vector<IplImage*> CameraCalibration::SetImageSeries(std::vector<std::string> filenames)
 {
   IplImage* imageTmp;
   std::vector<IplImage*> imageVectorConatiner;
@@ -209,13 +206,13 @@ vector<IplImage*> CameraCalibration::SetImageSeries(std::vector<std::string> fil
   return imageVectorConatiner;
 }
 
-void CameraCalibration::SaveCameraParams( const string& filename,
+void CameraCalibration::SaveCameraParams( const std::string& filename,
                        CvSize imageSize, CvSize boardSize,
                        float squareSize, float aspectRatio, int flags,
                        const CvMat* cameraMatrix, const CvMat* distCoeffs,
-                       const vector<CvMat>& rvecs, const vector<CvMat>& tvecs)
+                       const std::vector<CvMat>& rvecs, const std::vector<CvMat>& tvecs)
 {
-    FileStorage fs( filename, FileStorage::WRITE );
+    cv::FileStorage fs( filename, cv::FileStorage::WRITE );
 
     time_t t;
     time( &t );

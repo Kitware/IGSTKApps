@@ -4,7 +4,6 @@
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 
-using namespace std;
 
 class ValidateCameraCalibration
 {
@@ -17,7 +16,7 @@ public:
                        float squareSize,
                        std::string camCalibFile);
   
-  bool ReadCameraMatrix(const string& filename,
+  bool ReadCameraMatrix(const std::string& filename,
                         cv::Mat& cameraMatrix, cv::Mat& distCoeffs,
                         cv::Size& calibratedImageSize );
 
@@ -27,13 +26,13 @@ private:
   int m_CornersN;
 
   // parameter for calibration
-  vector<CvPoint2D32f> m_TempPoints;
-  vector<CvPoint3D32f> m_ObjectPoints;
-  vector<CvPoint2D32f> m_Points;
+  std::vector<CvPoint2D32f> m_TempPoints;
+  std::vector<CvPoint3D32f> m_ObjectPoints;
+  std::vector<CvPoint2D32f> m_Points;
 
-  vector<int> m_CornerCount;
-  vector<IplImage*> m_Images;
-  vector<CvPoint2D32f*> m_Corners;
+  std::vector<int> m_CornerCount;
+  std::vector<IplImage*> m_Images;
+  std::vector<CvPoint2D32f*> m_Corners;
 
   CvMat* m_AllObjectPoints;
   CvMat* m_AllImagePoints;

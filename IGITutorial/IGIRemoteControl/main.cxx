@@ -40,7 +40,7 @@
  * d. build the Image-Guided Surgery Toolkit (IGSTK) [www.igstk.org]
  */
 
-#ifdef WIN32
+#ifdef _WIN32
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR lpCmdLine,
