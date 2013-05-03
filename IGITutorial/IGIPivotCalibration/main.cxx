@@ -21,7 +21,7 @@
 #include "PivotCalibration.h"
 #include "igstkRealTimeClock.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR lpCmdLine,

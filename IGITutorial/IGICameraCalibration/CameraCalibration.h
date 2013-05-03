@@ -1,6 +1,10 @@
 #ifndef CAMERA_CALIBRATION_H_
 #define CAMERA_CALIBRATION_H_
 
+#ifdef _WIN32
+  #include <windows.h>
+#endif
+
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 
@@ -16,8 +20,6 @@
 
 #include <QLabel>
 
-using namespace std;
-
 class CameraCalibration
 {
 public:
@@ -28,13 +30,13 @@ public:
 	void SetDisplayCanvas(QLabel *Canvas) {m_Canvas = Canvas;};
   IplImage* GetGrayImage(IplImage* imageRGB);
   std::vector<IplImage*> SetImageSeries(std::vector<std::string> filenames);
-  bool StartCalibration(vector<IplImage*> imageSet, std::string savePath, std::string saveName);
+  bool StartCalibration(std::vector<IplImage*> imageSet, std::string savePath, std::string saveName);
 
-  void SaveCameraParams( const string& filename,
+  void SaveCameraParams( const std::string& filename,
                           CvSize imageSize, CvSize boardSize,
                           float squareSize, float aspectRatio, int flags,
                           const CvMat* cameraMatrix, const CvMat* distCoeffs,
-                          const vector<CvMat>& rvecs, const vector<CvMat>& tvecs);
+                          const std::vector<CvMat>& rvecs, const std::vector<CvMat>& tvecs);
 
   int m_CornersX;
   int m_CornersY;
@@ -50,13 +52,13 @@ private:
   QLabel *m_Canvas;
 
   // parameter for calibration
-  vector<CvPoint2D32f> m_TempPoints; 
-  vector<CvPoint3D32f> m_ObjectPoints;
-  vector<CvPoint2D32f> m_Points;
+  std::vector<CvPoint2D32f> m_TempPoints; 
+  std::vector<CvPoint3D32f> m_ObjectPoints;
+  std::vector<CvPoint2D32f> m_Points;
 
-  vector<int> m_CornerCount;
-  vector<IplImage*> m_Images;
-  vector<CvPoint2D32f*> m_Corners;
+  std::vector<int> m_CornerCount;
+  std::vector<IplImage*> m_Images;
+  std::vector<CvPoint2D32f*> m_Corners;
 
   CvMat* m_AllObjectPoints;
   CvMat* m_AllImagePoints;

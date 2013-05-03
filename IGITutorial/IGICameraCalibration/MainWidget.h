@@ -33,7 +33,7 @@ protected slots:
 private:
   Ui_MainWidget* m_UI;
   ImageCapture* m_Capture;
-  vector<std::string> m_FileNames;
+  std::vector<std::string> m_FileNames;
   std::string m_ImageDirectory;
   QString m_CurrentPath;
   QString m_ConfigDir;

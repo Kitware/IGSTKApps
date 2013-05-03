@@ -111,7 +111,7 @@ void MainWidget::CalibrateCamera()
     camCalib->m_CornersY = IGIConfigurationData::CHECKERBOARD_HEIGHT;
     camCalib->m_CornersN = camCalib->m_CornersX * camCalib->m_CornersY;
   
-    vector<IplImage*> loadedImages = camCalib->SetImageSeries(m_FileNames);
+    std::vector<IplImage*> loadedImages = camCalib->SetImageSeries(m_FileNames);
    
     if(camCalib->StartCalibration(loadedImages, m_ConfigDir.toStdString(), IGIConfigurationData::CAMERA_CALIBRATION_FILENAME))
     {
