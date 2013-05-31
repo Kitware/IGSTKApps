@@ -92,7 +92,7 @@
             <bool>false</bool>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="FirstStepWidget">
             <attribute name="title">
@@ -1224,7 +1224,7 @@
          </item>
          <item>
           <layout class="QGridLayout" name="bottomLayout">
-           <item row="0" column="0">
+           <item row="1" column="0">
             <layout class="QVBoxLayout" name="quitLayout">
              <item>
               <spacer name="verticalSpacer_6">
@@ -1273,7 +1273,7 @@
              </item>
             </layout>
            </item>
-           <item row="0" column="2">
+           <item row="1" column="2">
             <layout class="QVBoxLayout" name="helpLayout">
              <item>
               <spacer name="verticalSpacer_5">
@@ -1319,7 +1319,7 @@
              </item>
             </layout>
            </item>
-           <item row="0" column="1">
+           <item row="1" column="1">
             <layout class="QVBoxLayout" name="logoLayout">
              <item>
               <spacer name="verticalSpacer_3">
@@ -1333,6 +1333,25 @@
                 </size>
                </property>
               </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_12">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string>color: rgb(255, 0, 0);
+border: 2px solid red</string>
+               </property>
+               <property name="text">
+                <string>NOT for clinical use.</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="logo">
