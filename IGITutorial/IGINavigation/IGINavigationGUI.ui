@@ -353,6 +353,25 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
+              <widget class="QLabel" name="label_2">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string>color: rgb(255, 0, 0);
+border: 2px solid red</string>
+               </property>
+               <property name="text">
+                <string>NOT for clinical use.</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLabel" name="logoLabel">
                <property name="text">
                 <string/>
