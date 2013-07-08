@@ -8,6 +8,12 @@ include_directories(
 )
 
 #
+# Use OpenCV to actually do the tracking (used by the ArUco library)
+#
+find_package(OpenCV REQUIRED)
+include_directories(${OPENCV_INCLUDE_DIR})
+
+#
 # Use IGSTK to do the pivot calibration (algorithm, transformation
 # xml writing...)
 # We require IGSTK version IGSTK_MIN_VERSION or later (ArucoTracker
@@ -38,12 +44,6 @@ find_package(Qt4 REQUIRED)
 set(QT_USE_QTXML 1)
 include (${QT_USE_FILE} )
  
-#
-# Use OpenCV to actually do the tracking (used by the ArUco library)
-#
-find_package(OpenCV REQUIRED)
-include_directories(${OPENCV_INCLUDE_DIR})
-
 #
 # Description of the GUI used by Qt Designer
 #
@@ -88,7 +88,24 @@ set(IGINavigation_SRCS
 
 qt4_wrap_cpp(IGINavigation_MOC_SRCS ${IGINavigation_MOC_HEADERS})
 
-add_executable(IGINavigation WIN32 ${IGINavigation_QT_UI_SRCS} ${IGINavigation_RCC_SRCS} ${IGINavigation_SRCS}
+#
+# Setup Mac OS X bundle
+#
+if(APPLE)
+	set(ICONS_DIR "${${PROJECT_NAME}_SOURCE_DIR}/Images")
+    set(MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} ${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_NAME} ${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_NAME} ${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_ICON_FILE "icon.icns")
+	set(MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}")
+	set(MACOSX_BUNDLE_ICON "${ICONS_DIR}/${MACOSX_BUNDLE_ICON_FILE}")
+endif()
+
+# "WIN32" suppresses the MS-DOS command window
+# "MACOSX_BUNDLE" creates a MAC application bundle
+# "WIN32" and "MACOSX_BUNDLE" are defined depending on the platform
+add_executable(IGINavigation WIN32 MACOSX_BUNDLE ${IGINavigation_QT_UI_SRCS} ${IGINavigation_RCC_SRCS} ${IGINavigation_SRCS}
                                 ${IGINavigation_MOC_SRCS} ${WIN_RESOURCE_FILE})
 
 
@@ -108,14 +125,39 @@ if(UNIX)
 endif(UNIX)
 
 target_link_libraries(IGINavigation ${EXTRA_LIBS})
-                        
+
 #
 # Install the executable (belongs in the "applications" component)
 #
-install(TARGETS IGINavigation
-        RUNTIME
-        DESTINATION Programs
-        COMPONENT applications)
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION "Programs"
+        COMPONENT applications )
+
+#
+# Set platform specific application extension
+# additionally if APPLE copy icon into Resources folder
+#
+if(APPLE)
+  install(FILES ${MACOSX_BUNDLE_ICON}
+          DESTINATION "Programs/${PROJECT_NAME}.app/Contents/Resources"
+          COMPONENT applications )
+  set(EXECUTABLE "${PROJECT_NAME}.app")
+elseif(WIN32)
+  set(EXECUTABLE "${PROJECT_NAME}.exe")
+elseif(UNIX)
+  if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+  set(EXECUTABLE "${PROJECT_NAME}")
+  endif()
+endif()
+
+#
+# Install required Qt libraries
+#
+if(UNIX OR WIN32)
+  include(DeployQt4)
+  install_qt4_executable("Programs/${EXECUTABLE}" "QtGui" "" "" "" "" "applications")
+endif()
+
 #
 # Install the Readme file which has to be in the same directory as
 # the executable

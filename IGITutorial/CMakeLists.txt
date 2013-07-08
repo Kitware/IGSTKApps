@@ -2,6 +2,18 @@ project(IGITutorial)
 
 cmake_minimum_required(VERSION 2.8)
 
+#
+# CPack setup to generate installers
+#
+set(CPACK_PACKAGE_NAME "IGITutorial")
+set(CPACK_PACKAGE_VENDOR "IGSTK Developers")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "IGITutorial - hands-on image-guided navigation tutorial")
+set(CPACK_PACKAGE_VERSION_MAJOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "2")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "IGITutorial")
+
 add_subdirectory(IGICameraCalibration)
 add_subdirectory(IGIPivotCalibration)
 add_subdirectory(IGIPlanning)
@@ -13,7 +25,7 @@ if(WIN32)
 endif(WIN32)
 
 #
-#  Tell Cpack to copy the windows runtime libraries to the bin
+# Tell Cpack to copy the windows runtime libraries to the bin
 # directory
 #
 if(WIN32)
@@ -25,7 +37,7 @@ if(WIN32)
 endif(WIN32)
 
 #
-# Find Qt
+# Find Qt and check version
 #
 set( QT_MIN_VERSION 4.6.0 )
 
@@ -35,39 +47,6 @@ set( QT_VERSION ${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH} )
 
 if( ${QT_VERSION} VERSION_LESS ${QT_MIN_VERSION} )
   message( FATAL_ERROR "This application requires Qt version ${QT_MIN_VERSION} or later. Provided version is ${QT_VERSION}.")
-else()
-	#
-	# Install the Qt .dll/.so files (they go into Programs folder)
-	#
-	if(WIN32)
-	  install(FILES "${QT_LIBRARY_DIR}/QtCore4.dll"
-			DESTINATION Programs
-			COMPONENT applications)
-
-	  install(FILES "${QT_LIBRARY_DIR}/QtGui4.dll"
-			DESTINATION Programs
-			COMPONENT applications)
-
-	  install(FILES "${QT_LIBRARY_DIR}/QtXml4.dll"
-			DESTINATION Programs
-			COMPONENT applications)
-	endif(WIN32)
-
-	if(UNIX)
-	  if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
-	    install(FILES "${QT_LIBRARY_DIR}/libQtCore.so"
-			DESTINATION Programs
-			COMPONENT applications)
-
-	    install(FILES "${QT_LIBRARY_DIR}/libQtGui.so"
-			DESTINATION Programs
-			COMPONENT applications)
-
-	    install(FILES "${QT_LIBRARY_DIR}/libQtXml.so"
-			DESTINATION Programs
-			COMPONENT applications)
-	  endif(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
-	endif(UNIX)
 endif()
 
 #
@@ -158,18 +137,6 @@ install(FILES "${CMAKE_SOURCE_DIR}/${DATA_FOR_DEVELOPERS_DIR}/VirtualKeyboard.pd
 install(FILES "${CMAKE_SOURCE_DIR}/${LEGO_INSTRUCTIONS}/legoTowerInstructions.pdf"
         DESTINATION ${PRINT_DATA_DIR}       
         COMPONENT apps4Developers)
-
-#
-# CPack setup to generate installers
-#
-set(CPACK_PACKAGE_NAME "IGITutorial")
-set(CPACK_PACKAGE_VENDOR "IGSTK Developers")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "IGITutorial - hands-on image-guided navigation tutorial")
-set(CPACK_PACKAGE_VERSION_MAJOR "2")
-set(CPACK_PACKAGE_VERSION_MINOR "1")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
-set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "IGITutorial")
 
 #
 # Text from "license.txt" is displayed in the installer

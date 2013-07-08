@@ -35,7 +35,7 @@
 #include "igstkArucoTrackerTool.h"
 #include "igstkPivotCalibration.h"
 
-#include "ui_PivotCalibration.h"
+#include "ui_IGIPivotCalibration.h"
 
 class PivotCalibration : public QMainWindow
 {
