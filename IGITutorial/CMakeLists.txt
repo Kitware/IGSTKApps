@@ -49,6 +49,25 @@ if( ${QT_VERSION} VERSION_LESS ${QT_MIN_VERSION} )
   message( FATAL_ERROR "This application requires Qt version ${QT_MIN_VERSION} or later. Provided version is ${QT_VERSION}.")
 endif()
 
+if(UNIX)
+  if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+
+    install(FILES "${QT_LIBRARY_DIR}/libQtCore.so.${QT_VERSION}"
+        DESTINATION Programs
+        COMPONENT applications)
+
+    install(FILES "${QT_LIBRARY_DIR}/libQtGui.so.${QT_VERSION}"
+        DESTINATION Programs
+        COMPONENT applications)
+
+    install(FILES "${QT_LIBRARY_DIR}/libQtXml.so.${QT_VERSION}"
+        DESTINATION Programs
+        COMPONENT applications)
+
+  endif(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+endif(UNIX)
+
+
 #
 # Install the data files (they go in the "data" component)
 #
