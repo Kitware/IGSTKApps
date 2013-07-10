@@ -49,6 +49,10 @@ if( ${QT_VERSION} VERSION_LESS ${QT_MIN_VERSION} )
   message( FATAL_ERROR "This application requires Qt version ${QT_MIN_VERSION} or later. Provided version is ${QT_VERSION}.")
 endif()
 
+#
+# Add Qt libs in Linux manually to the executables,
+# since DeployQt4 has a bug in Linux
+#
 if(UNIX)
   if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
 
