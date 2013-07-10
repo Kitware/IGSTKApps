@@ -116,7 +116,7 @@ target_link_libraries(IGIPlanning Tools IGSTK ${QT_LIBRARIES} )
 # Install the executable (belongs in the "applications" component)
 #
 install(TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION "Programs"
+        DESTINATION "Programs"
         COMPONENT applications )
 
 #

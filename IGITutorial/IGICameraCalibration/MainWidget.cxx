@@ -30,12 +30,11 @@ MainWidget::MainWidget( QWidget * parent )
   
   // get current application path
   QString path = QApplication::applicationDirPath();
-  QDir currentDir = QDir(path);
-  m_CurrentPath = currentDir.absolutePath();
+  path.truncate(path.lastIndexOf("/Programs"));
+  m_CurrentPath = path + "/Programs";
   m_ImageDirectory = m_CurrentPath.toStdString() + "/tmp";	
   
-  currentDir.cdUp();
-  m_ConfigDir = currentDir.absolutePath() + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
+  m_ConfigDir = path + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
 	
   m_UI->workspace->setText("Current Workspace: " + QString(m_ImageDirectory.c_str()));
 	

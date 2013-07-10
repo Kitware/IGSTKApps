@@ -130,7 +130,7 @@ target_link_libraries(IGINavigation ${EXTRA_LIBS})
 # Install the executable (belongs in the "applications" component)
 #
 install(TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION "Programs"
+        DESTINATION "Programs"
         COMPONENT applications )
 
 #

@@ -38,11 +38,11 @@ IGINavigationGUI::IGINavigationGUI()
   
   // get current application path
   QString path = QApplication::applicationDirPath();
-  QDir currentDir = QDir(path);
-  m_CurrentPath = currentDir.absolutePath();  
-  currentDir.cdUp();
-  m_TutorialDir = currentDir.absolutePath();
-  m_ConfigDir = currentDir.absolutePath() + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;  
+  path.truncate(path.lastIndexOf("/Programs"));
+  m_CurrentPath = path + "/Programs";
+
+  m_TutorialDir = path;
+  m_ConfigDir = path + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
   
   m_GUI.LEDlabelDRF->hide();
   m_GUI.LEDlabelTool->hide();
