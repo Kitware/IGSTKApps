@@ -1,11 +1,17 @@
 project(IGI3DDigitizer)
-  
+
 cmake_minimum_required(VERSION 2.8)
 
 include_directories(
   ${IGI3DDigitizer_SOURCE_DIR}
   ${IGI3DDigitizer_BINARY_DIR}
 )
+
+#
+# Use OpenCV to actually do the tracking (used by the ArUco library)
+#
+find_package(OpenCV REQUIRED)
+include_directories(${OPENCV_INCLUDE_DIR})
 
 #
 # Use IGSTK to do the pivot calibration (algorithm, transformation
@@ -37,12 +43,6 @@ endif()
 find_package(Qt4 REQUIRED)
 set(QT_USE_QTXML 1)
 include (${QT_USE_FILE} )
- 
-#
-# Use OpenCV to actually do the tracking (used by the ArUco library)
-#
-find_package(OpenCV REQUIRED)
-include_directories(${OPENCV_INCLUDE_DIR})
 
 #
 # Description of the GUI used by Qt Designer
@@ -85,9 +85,25 @@ set(IGI3DDigitizer_SRCS
 
 qt4_wrap_cpp(IGI3DDigitizer_MOC_SRCS ${IGI3DDigitizer_MOC_HEADERS})
 
-add_executable(IGI3DDigitizer WIN32 ${IGI3DDigitizer_QT_UI_SRCS} ${IGI3DDigitizer_RCC_SRCS} ${IGI3DDigitizer_SRCS}
-                                ${IGI3DDigitizer_MOC_SRCS} ${WIN_RESOURCE_FILE})
+#
+# Setup Mac OS X bundle
+#
+if(APPLE)
+	set(ICONS_DIR "${${PROJECT_NAME}_SOURCE_DIR}/Images")
+    set(MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} ${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_NAME} ${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_NAME} ${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
+	set(MACOSX_BUNDLE_ICON_FILE "icon.icns")
+	set(MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}")
+	set(MACOSX_BUNDLE_ICON "${ICONS_DIR}/${MACOSX_BUNDLE_ICON_FILE}")
+endif()
 
+# "WIN32" suppresses the MS-DOS command window
+# "MACOSX_BUNDLE" creates a MAC application bundle
+# "WIN32" and "MACOSX_BUNDLE" are defined depending on the platform
+add_executable(IGI3DDigitizer WIN32 MACOSX_BUNDLE ${IGI3DDigitizer_QT_UI_SRCS} ${IGI3DDigitizer_RCC_SRCS} ${IGI3DDigitizer_SRCS}
+                                ${IGI3DDigitizer_MOC_SRCS} ${WIN_RESOURCE_FILE})
 
 SET(EXTRA_LIBS ${EXTRA_LIBS} 
   IGSTK
@@ -105,14 +121,39 @@ if(UNIX)
 endif(UNIX)
 
 target_link_libraries(IGI3DDigitizer ${EXTRA_LIBS})
-                        
+
 #
-# Install the executable (belongs in the "apps4Developers" component)
+# Install the executable (belongs in the "applications" component)
 #
-install(TARGETS IGI3DDigitizer
-        RUNTIME
-        DESTINATION Programs
+install(TARGETS ${PROJECT_NAME}
+        DESTINATION "Programs"
         COMPONENT apps4Developers)
+
+#
+# Set platform specific application extension
+# additionally if APPLE copy icon into Resources folder
+#
+if(APPLE)
+  install(FILES ${MACOSX_BUNDLE_ICON}
+          DESTINATION "Programs/${PROJECT_NAME}.app/Contents/Resources"
+          COMPONENT applications )
+  set(EXECUTABLE "${PROJECT_NAME}.app")
+elseif(WIN32)
+  set(EXECUTABLE "${PROJECT_NAME}.exe")
+elseif(UNIX)
+  if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+    set(EXECUTABLE "${PROJECT_NAME}")
+  endif()
+endif()
+
+#
+# Install required Qt libraries
+#
+if(UNIX OR WIN32)
+  include(DeployQt4)
+  install_qt4_executable("Programs/${EXECUTABLE}" "QtGui" "" "" "" "" "apps4Developers")
+endif()
+
 #
 # Install the Readme file which has to be in the same directory as
 # the executable

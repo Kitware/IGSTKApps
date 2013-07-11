@@ -122,11 +122,10 @@ PivotCalibration::PivotCalibration()
 
   // get current application path
   QString path = QApplication::applicationDirPath();
-  QDir currentDir = QDir(path);
-  m_CurrentPath = currentDir.absolutePath();
+  path.truncate(path.lastIndexOf("/Programs"));
+  m_CurrentPath = path + "/Programs";
   
-  currentDir.cdUp();
-  m_ConfigDir = currentDir.absolutePath() + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
+  m_ConfigDir = path + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
   
   nrOfTransformations = 300;
   m_GUI.CalibrateButton->setEnabled(false);

@@ -34,10 +34,9 @@ IGITrackingDataGUI::IGITrackingDataGUI()
   
   // get current application path
   QString path = QApplication::applicationDirPath();
-  QDir currentDir = QDir(path);
-  m_CurrentPath = currentDir.absolutePath();  
-  currentDir.cdUp();
-  m_ConfigDir = currentDir.absolutePath() + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;  
+  path.truncate(path.lastIndexOf("/Programs"));
+  m_CurrentPath = path + "/Programs";
+  m_ConfigDir = path + "/" + IGIConfigurationData::CONFIGURATION_FOLDER;
 
   m_PositionIterator = 1;
  
